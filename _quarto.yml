@@ -1,0 +1,112 @@
+project:
+  type: book
+  output-dir: docs
+
+book:
+  title: "Practical Web Development"
+  subtitle: "From Server-Rendered Pages to React with Python and FastAPI"
+  author: "Igor Benav"
+  cover-image: images/cover.png
+  chapters:
+    - index.qmd
+    - chapters/chapter1.qmd
+    # - chapters/chapter2.qmd
+    # - chapters/chapter3.qmd
+    # - chapters/chapter4.qmd
+    # - chapters/chapter5.qmd
+    # - chapters/chapter6.qmd
+    # - chapters/chapter7.qmd
+    # - chapters/chapter8.qmd
+    # - chapters/chapter9.qmd
+    # - chapters/chapter10.qmd
+    # - chapters/chapter11.qmd
+    # - chapters/chapter12.qmd
+    # - chapters/chapter13.qmd
+    - references.qmd
+
+format:
+  html:
+    theme: cosmo
+    code-fold: false
+    code-tools: true
+    code-link: true
+    code-copy: true
+    highlight-style: github
+    toc-depth: 2
+    number-depth: 3
+    bibliography: references.bib
+    bibliography-title: "References"
+    citestyle: chicago-author-date
+    nocite: |
+      @*
+    include-in-header:
+      text: |
+        <style>
+        pre, code {
+          font-size: 0.85em;
+        }
+        .csl-entry {
+          margin-bottom: 1em;
+          padding-left: 2em;
+          text-indent: -2em;
+        }
+        </style>
+  pdf:
+    pdf-engine: xelatex
+    documentclass: scrreprt
+    toc-depth: 2
+    number-sections: true
+    number-depth: 3
+    bibliography: references.bib
+    bibliography-title: "References"
+    citestyle: chicago-author-date
+    nocite: |
+      @*
+    # Font settings
+    mainfont: "Palatino"
+    monofont: "Courier New"
+    fontsize: 11pt
+    # Layout settings
+    geometry:
+      - top=1.5cm
+      - bottom=2cm
+      - left=2cm
+      - right=2cm
+      - includeheadfoot
+    # Code block settings
+    code-block-bg: "#f8f9fa"
+    code-block-border-left: "#e9ecef"
+    highlight-style: github
+    # Table of contents settings
+    toc-title: "Contents"
+    # Figure and table settings
+    fig-cap-location: "bottom"
+    tbl-cap-location: "bottom"
+    # Cross-references
+    crossref:
+      chapters: true
+      labels: "all"
+    # Additional LaTeX settings
+    header-includes:
+      - \usepackage{booktabs}
+      - \usepackage{hyperref}
+      - \hypersetup{colorlinks=true, linkcolor=blue, filecolor=blue, urlcolor=blue, citecolor=blue}
+      - \usepackage{listings}
+      - \usepackage{float}
+      - \usepackage{fvextra}
+      - \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},formatcom=\let\textequals\textequals}
+      - \let\textequals\textequals
+      - \DeclareTextFontCommand{\textequals}{=}
+      - |
+        \lstset{
+          basicstyle=\fontsize{9.5}{11.5}\ttfamily,
+          breaklines=true,
+          showstringspaces=false
+        }
+      - |
+        \AtBeginEnvironment{Highlighting}{\fontsize{9}{11}\selectfont}
+
+execute:
+  freeze: auto
+  echo: true
+  warning: false

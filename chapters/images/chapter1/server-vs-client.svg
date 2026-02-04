@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 400">
+  <style>
+    .background { fill: #f8f9fa; }
+    .box { stroke-width: 1.5; rx: 5; ry: 5; }
+    .request-box { fill: #e6f7ff; stroke: #1890ff; }
+    .response-box { fill: #d9f7be; stroke: #52c41a; }
+    .process-box { fill: #fff7e6; stroke: #fa8c16; }
+    .db-box { fill: #f9f0ff; stroke: #722ed1; }
+    .client-box { fill: #fff1f0; stroke: #ff7875; }
+    .zone { fill: none; stroke-width: 1.5; rx: 8; ry: 8; }
+    .server-zone { stroke: #52c41a; stroke-dasharray: 6,3; }
+    .client-zone { stroke: #1890ff; stroke-dasharray: 6,3; }
+    .arrow { stroke: #666; stroke-width: 1.5; fill: none; }
+    .label { font-family: 'Arial', sans-serif; font-size: 12px; text-anchor: middle; fill: #333; }
+    .zone-label { font-family: 'Arial', sans-serif; font-size: 11px; text-anchor: start; font-weight: 600; }
+    .server-label { fill: #52c41a; }
+    .client-label { fill: #1890ff; }
+    .title { font-family: 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+    .section-title { font-family: 'Arial', sans-serif; font-size: 14px; font-weight: 600; text-anchor: middle; }
+    .htmx-title { fill: #fa8c16; }
+    .react-title { fill: #722ed1; }
+    .note { font-family: 'Arial', sans-serif; font-size: 11px; text-anchor: middle; fill: #666; }
+    .data-label { font-family: 'Arial', sans-serif; font-size: 10px; text-anchor: middle; fill: #888; font-style: italic; }
+  </style>
+
+  <!-- Background -->
+  <rect width="700" height="400" class="background" />
+
+  <!-- Title -->
+  <text x="350" y="28" class="title">Two Ways to Build Dynamic Websites</text>
+
+  <!-- Divider line -->
+  <line x1="350" y1="45" x2="350" y2="370" stroke="#ddd" stroke-width="1" stroke-dasharray="4,4" />
+
+  <!-- LEFT SIDE: Server-Rendered -->
+  <text x="175" y="58" class="section-title htmx-title">Server-Rendered</text>
+  <text x="175" y="73" class="note">(HTMX approach)</text>
+
+  <!-- Server zone -->
+  <rect x="60" y="85" width="230" height="150" class="zone server-zone" />
+  <text x="70" y="102" class="zone-label server-label">SERVER</text>
+
+  <!-- Request -->
+  <g transform="translate(130, 110)">
+    <rect width="90" height="32" class="box request-box" />
+    <text x="45" y="21" class="label">Request</text>
+  </g>
+
+  <line x1="175" y1="142" x2="175" y2="158" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Run code + DB -->
+  <g transform="translate(100, 158)">
+    <rect width="70" height="32" class="box process-box" />
+    <text x="35" y="21" class="label">Run code</text>
+  </g>
+
+  <line x1="170" y1="174" x2="195" y2="174" class="arrow" marker-end="url(#arrowhead)" />
+
+  <g transform="translate(195, 158)">
+    <rect width="70" height="32" class="box db-box" />
+    <text x="35" y="21" class="label">Database</text>
+  </g>
+
+  <line x1="175" y1="190" x2="175" y2="206" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Generate HTML -->
+  <g transform="translate(115, 206)">
+    <rect width="120" height="32" class="box process-box" />
+    <text x="60" y="21" class="label">Generate HTML</text>
+  </g>
+
+  <!-- Arrow crossing to client -->
+  <line x1="175" y1="238" x2="175" y2="270" class="arrow" marker-end="url(#arrowhead)" />
+  <text x="200" y="258" class="data-label">HTML</text>
+
+  <!-- Client zone -->
+  <rect x="60" y="270" width="230" height="70" class="zone client-zone" />
+  <text x="70" y="287" class="zone-label client-label">BROWSER</text>
+
+  <!-- Display -->
+  <g transform="translate(130, 300)">
+    <rect width="90" height="32" class="box client-box" />
+    <text x="45" y="21" class="label">Display</text>
+  </g>
+
+  <text x="175" y="365" class="note">Server does the work.</text>
+  <text x="175" y="380" class="note">Browser just displays.</text>
+
+  <!-- RIGHT SIDE: Client-Rendered -->
+  <text x="525" y="58" class="section-title react-title">Client-Rendered</text>
+  <text x="525" y="73" class="note">(React approach)</text>
+
+  <!-- Server zone -->
+  <rect x="410" y="85" width="230" height="150" class="zone server-zone" />
+  <text x="420" y="102" class="zone-label server-label">SERVER</text>
+
+  <!-- Request -->
+  <g transform="translate(480, 110)">
+    <rect width="90" height="32" class="box request-box" />
+    <text x="45" y="21" class="label">Request</text>
+  </g>
+
+  <line x1="525" y1="142" x2="525" y2="158" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Run code + DB -->
+  <g transform="translate(450, 158)">
+    <rect width="70" height="32" class="box process-box" />
+    <text x="35" y="21" class="label">Run code</text>
+  </g>
+
+  <line x1="520" y1="174" x2="545" y2="174" class="arrow" marker-end="url(#arrowhead)" />
+
+  <g transform="translate(545, 158)">
+    <rect width="70" height="32" class="box db-box" />
+    <text x="35" y="21" class="label">Database</text>
+  </g>
+
+  <line x1="525" y1="190" x2="525" y2="206" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Send JSON -->
+  <g transform="translate(470, 206)">
+    <rect width="110" height="32" class="box process-box" />
+    <text x="55" y="21" class="label">Send data (JSON)</text>
+  </g>
+
+  <!-- Arrow crossing to client -->
+  <line x1="525" y1="238" x2="525" y2="270" class="arrow" marker-end="url(#arrowhead)" />
+  <text x="550" y="258" class="data-label">JSON</text>
+
+  <!-- Client zone -->
+  <rect x="410" y="270" width="230" height="70" class="zone client-zone" />
+  <text x="420" y="287" class="zone-label client-label">BROWSER</text>
+
+  <!-- Generate HTML + Display -->
+  <g transform="translate(440, 300)">
+    <rect width="80" height="32" class="box client-box" />
+    <text x="40" y="21" class="label">Build HTML</text>
+  </g>
+
+  <line x1="520" y1="316" x2="545" y2="316" class="arrow" marker-end="url(#arrowhead)" />
+
+  <g transform="translate(545, 300)">
+    <rect width="70" height="32" class="box client-box" />
+    <text x="35" y="21" class="label">Display</text>
+  </g>
+
+  <text x="525" y="365" class="note">Server sends data.</text>
+  <text x="525" y="380" class="note">Browser builds the page.</text>
+
+  <!-- Arrowhead definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#666" />
+    </marker>
+  </defs>
+</svg>

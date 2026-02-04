@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 200">
+  <style>
+    .background { fill: #f8f9fa; }
+    .box { stroke-width: 1.5; rx: 5; ry: 5; }
+    .user-box { fill: #fff1f0; stroke: #ff7875; }
+    .http-box { fill: #f5f5f5; stroke: #999; }
+    .server-box { fill: #d9f7be; stroke: #52c41a; }
+    .result-box { fill: #e6f7ff; stroke: #1890ff; }
+    .arrow { stroke: #666; stroke-width: 1.5; fill: none; }
+    .label { font-family: 'Arial', sans-serif; font-size: 12px; text-anchor: middle; fill: #333; }
+    .http-text { font-family: 'Consolas', 'Monaco', monospace; font-size: 10px; text-anchor: middle; fill: #666; }
+    .title { font-family: 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+    .note { font-family: 'Arial', sans-serif; font-size: 11px; text-anchor: middle; fill: #666; }
+  </style>
+
+  <!-- Background -->
+  <rect width="600" height="200" class="background" />
+
+  <!-- Title -->
+  <text x="300" y="28" class="title">What Happens When You Visit a Page</text>
+
+  <!-- User action -->
+  <g transform="translate(30, 60)">
+    <rect width="80" height="50" class="box user-box" />
+    <text x="40" y="22" class="label">User visits</text>
+    <text x="40" y="38" class="http-text">/about</text>
+  </g>
+
+  <line x1="110" y1="85" x2="140" y2="85" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Request -->
+  <g transform="translate(140, 60)">
+    <rect width="100" height="50" class="box http-box" />
+    <text x="50" y="22" class="label">Request</text>
+    <text x="50" y="38" class="http-text">GET /about</text>
+  </g>
+
+  <line x1="240" y1="85" x2="270" y2="85" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Server processes -->
+  <g transform="translate(270, 60)">
+    <rect width="100" height="50" class="box server-box" />
+    <text x="50" y="22" class="label">Server</text>
+    <text x="50" y="38" class="http-text">runs code</text>
+  </g>
+
+  <line x1="370" y1="85" x2="400" y2="85" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Response -->
+  <g transform="translate(400, 60)">
+    <rect width="100" height="50" class="box http-box" />
+    <text x="50" y="22" class="label">Response</text>
+    <text x="50" y="38" class="http-text">200 OK + HTML</text>
+  </g>
+
+  <line x1="500" y1="85" x2="530" y2="85" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Result -->
+  <g transform="translate(530, 60)">
+    <rect width="55" height="50" class="box result-box" />
+    <text x="27" y="30" class="label">Page</text>
+  </g>
+
+  <!-- Labels underneath -->
+  <text x="70" y="135" class="note">Action</text>
+  <text x="190" y="135" class="note">HTTP</text>
+  <text x="320" y="135" class="note">Your code</text>
+  <text x="450" y="135" class="note">HTTP</text>
+  <text x="557" y="135" class="note">Result</text>
+
+  <!-- Bottom note -->
+  <text x="300" y="170" class="note">Every link click, form submit, and image load follows this same flow.</text>
+
+  <!-- Arrowhead definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#666" />
+    </marker>
+  </defs>
+</svg>

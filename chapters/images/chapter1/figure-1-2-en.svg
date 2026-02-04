@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 280">
+  <style>
+    .background { fill: #f8f9fa; }
+    .url-bg { fill: #fff; stroke: #d9d9d9; stroke-width: 1; }
+    .url-text { font-family: 'Consolas', 'Monaco', monospace; font-size: 14px; fill: #333; }
+    .scheme { fill: #ff7875; }
+    .domain { fill: #1890ff; }
+    .port { fill: #722ed1; }
+    .path { fill: #52c41a; }
+    .query { fill: #fa8c16; }
+    .fragment { fill: #eb2f96; }
+    .label { font-family: 'Arial', sans-serif; font-size: 12px; text-anchor: middle; }
+    .label-box { stroke-width: 1.5; rx: 3; ry: 3; }
+    .connector { stroke: #999; stroke-width: 1; stroke-dasharray: 2,2; }
+    .title { font-family: 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+  </style>
+
+  <!-- Background -->
+  <rect width="700" height="280" class="background" />
+
+  <!-- Title -->
+  <text x="350" y="30" class="title">Anatomy of a URL</text>
+
+  <!-- URL Background -->
+  <rect x="40" y="50" width="620" height="36" class="url-bg" rx="4" ry="4" />
+
+  <!-- URL Parts - colored spans -->
+  <text y="74" class="url-text">
+    <tspan x="50" class="scheme">https://</tspan><tspan class="domain">www.example.com</tspan><tspan class="port">:443</tspan><tspan class="path">/products/shoes</tspan><tspan class="query">?color=red&amp;size=10</tspan><tspan class="fragment">#reviews</tspan>
+  </text>
+
+  <!-- Connectors and Labels -->
+
+  <!-- Scheme -->
+  <line x1="75" y1="90" x2="75" y2="115" class="connector" />
+  <g transform="translate(75, 130)">
+    <rect x="-35" y="-14" width="70" height="24" fill="#fff1f0" stroke="#ff7875" class="label-box" />
+    <text x="0" y="4" class="label" fill="#cf1322">Scheme</text>
+  </g>
+  <text x="75" y="170" class="label" fill="#666">Protocol to use</text>
+
+  <!-- Domain -->
+  <line x1="180" y1="90" x2="180" y2="115" class="connector" />
+  <g transform="translate(180, 130)">
+    <rect x="-40" y="-14" width="80" height="24" fill="#e6f7ff" stroke="#1890ff" class="label-box" />
+    <text x="0" y="4" class="label" fill="#096dd9">Domain</text>
+  </g>
+  <text x="180" y="170" class="label" fill="#666">Server address</text>
+
+  <!-- Port -->
+  <line x1="280" y1="90" x2="280" y2="115" class="connector" />
+  <g transform="translate(280, 130)">
+    <rect x="-25" y="-14" width="50" height="24" fill="#f9f0ff" stroke="#722ed1" class="label-box" />
+    <text x="0" y="4" class="label" fill="#531dab">Port</text>
+  </g>
+  <text x="280" y="170" class="label" fill="#666">Which service</text>
+
+  <!-- Path -->
+  <line x1="380" y1="90" x2="380" y2="115" class="connector" />
+  <g transform="translate(380, 130)">
+    <rect x="-25" y="-14" width="50" height="24" fill="#f6ffed" stroke="#52c41a" class="label-box" />
+    <text x="0" y="4" class="label" fill="#389e0d">Path</text>
+  </g>
+  <text x="380" y="170" class="label" fill="#666">Which resource</text>
+
+  <!-- Query -->
+  <line x1="500" y1="90" x2="500" y2="115" class="connector" />
+  <g transform="translate(500, 130)">
+    <rect x="-45" y="-14" width="90" height="24" fill="#fff7e6" stroke="#fa8c16" class="label-box" />
+    <text x="0" y="4" class="label" fill="#d46b08">Query String</text>
+  </g>
+  <text x="500" y="170" class="label" fill="#666">Parameters</text>
+
+  <!-- Fragment -->
+  <line x1="610" y1="90" x2="610" y2="115" class="connector" />
+  <g transform="translate(610, 130)">
+    <rect x="-40" y="-14" width="80" height="24" fill="#fff0f6" stroke="#eb2f96" class="label-box" />
+    <text x="0" y="4" class="label" fill="#c41d7f">Fragment</text>
+  </g>
+  <text x="610" y="170" class="label" fill="#666">Page location</text>
+
+  <!-- Bottom note -->
+  <text x="350" y="220" class="label" fill="#666">Your server code cares about the path and query string.</text>
+  <text x="350" y="238" class="label" fill="#666">The fragment never reaches the server, it's browser-only.</text>
+
+</svg>

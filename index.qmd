@@ -1,0 +1,42 @@
+# Preface {.unnumbered}
+
+To be written.
+
+## About This Book {.unnumbered}
+
+Most web development resources fall into two camps: tutorials that get you copying code without understanding why, or comprehensive references that bury you in details before you can build anything. This book tries to find the middle ground.
+
+We start with how the web actually works (HTTP, requests, responses) before writing any server code. This isn't filler. When something breaks later, you'll know where to look because you understand the underlying mechanics.
+
+The book is opinionated. We use Python and FastAPI on the server. For interactivity, we start with HTMX (server-rendered HTML, minimal JavaScript) before moving to React (client-rendered, more JavaScript). You'll understand both approaches and when each makes sense. We're not trying to cover every framework or teach you the "best" way. We're teaching you one coherent way that works, so you have solid ground to stand on when you explore other options later.
+
+By the end, you'll have built and deployed a real web application. Not a toy project that only runs on your laptop, but something on the internet that other people can use.
+
+## How to Use This Book {.unnumbered}
+
+This book assumes you already know Python. You should be comfortable with variables, functions, loops, conditionals, lists, and dictionaries. If you've worked through an introductory Python book or course, you're ready. We won't explain what a function is, but we will explain what a web server is.
+
+The chapters are meant to be read in order. Each one builds on the previous. If you skip the chapter on HTTP, the chapter on forms won't make sense. If you skip templates, you'll be lost when we add HTMX.
+
+Each chapter follows a pattern:
+
+- **Concepts first**: What are we trying to do and why?
+- **Implementation**: How to actually do it in code
+- **Hands-on project**: A practical exercise that uses what you just learned
+- **Exercises**: More practice on your own
+
+Type the code yourself. Don't copy and paste. The errors you make and fix along the way are part of learning. Change things. Break things. See what happens.
+
+When you get stuck, resist asking AI for the solution. Ask for a hint if you need to, but do the thinking yourself. Struggling is normal. It's also how you actually learn, rather than just feeling like you're learning.
+
+## Prerequisites {.unnumbered}
+
+You'll need:
+
+- Python 3.11 or newer installed
+- A code editor (VS Code works well, I like Zed)
+- A terminal you're comfortable using
+- Basic Python knowledge (variables, functions, loops, lists, dictionaries)
+- Willingness to read error messages instead of panicking
+
+You don't need any prior web development experience. You don't need to know HTML, CSS, or JavaScript. We'll cover what you need as we go.

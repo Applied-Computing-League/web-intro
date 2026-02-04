@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 220">
+  <style>
+    .background { fill: #f8f9fa; }
+    .client-box { fill: #e6f7ff; stroke: #1890ff; stroke-width: 1.5; }
+    .server-box { fill: #f6ffed; stroke: #52c41a; stroke-width: 1.5; }
+    .arrow { stroke: #666; stroke-width: 1.5; }
+    .label { font-family: 'Arial', sans-serif; font-size: 14px; text-anchor: middle; fill: #333; }
+    .box-label { font-family: 'Arial', sans-serif; font-size: 16px; text-anchor: middle; font-weight: 500; }
+    .client-label { fill: #1890ff; }
+    .server-label { fill: #389e0d; }
+    .arrow-label { font-family: 'Arial', sans-serif; font-size: 13px; text-anchor: middle; fill: #666; }
+    .title { font-family: 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+  </style>
+
+  <!-- Background -->
+  <rect width="600" height="220" class="background" />
+
+  <!-- Title -->
+  <text x="300" y="30" class="title">The Request-Response Cycle</text>
+
+  <!-- Client Box -->
+  <g transform="translate(80, 70)">
+    <rect width="120" height="80" rx="6" ry="6" class="client-box" />
+    <text x="60" y="45" class="box-label client-label">Browser</text>
+    <text x="60" y="65" class="label">(Client)</text>
+  </g>
+
+  <!-- Server Box -->
+  <g transform="translate(400, 70)">
+    <rect width="120" height="80" rx="6" ry="6" class="server-box" />
+    <text x="60" y="45" class="box-label server-label">Server</text>
+    <text x="60" y="65" class="label">(Your Code)</text>
+  </g>
+
+  <!-- Request Arrow (top) -->
+  <line x1="200" y1="95" x2="400" y2="95" class="arrow" marker-end="url(#arrowhead)" />
+  <text x="300" y="85" class="arrow-label">Request</text>
+
+  <!-- Response Arrow (bottom) -->
+  <line x1="400" y1="125" x2="200" y2="125" class="arrow" marker-end="url(#arrowhead)" />
+  <text x="300" y="145" class="arrow-label">Response</text>
+
+  <!-- Explanatory text -->
+  <text x="300" y="190" class="label">Every web interaction follows this pattern:</text>
+  <text x="300" y="208" class="label">the client asks, the server answers.</text>
+
+  <!-- Arrowhead definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#666" />
+    </marker>
+  </defs>
+</svg>
