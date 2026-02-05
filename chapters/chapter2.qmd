@@ -1,0 +1,507 @@
+# Chapter 2: HTML
+
+In the previous chapter, we saw what the server sends back when you visit a webpage: text that starts with `<!DOCTYPE html>` and contains things like `<head>`, `<body>`, and `<p>`. That text is HTML, and it's what this chapter is about.
+
+HTML is not a programming language. You can't write loops or conditionals in it. It's a markup language: a way to describe the structure of a document. When you write HTML, you're telling the browser "this is a heading," "this is a paragraph," "this is a link to another page." The browser reads those instructions and renders them visually.
+
+Every webpage you've ever visited is built on HTML. The browser might also load CSS (for styling) and JavaScript (for interactivity), but the foundation is always HTML. If you right-click on any webpage and select "View Page Source," you'll see the HTML that built it. But what even is HTML?
+
+## What HTML Is
+
+HTML stands for HyperText Markup Language. The "HyperText" part refers to links: text that connects to other documents. The "Markup" part refers to the tags you use to annotate content.
+
+An HTML document is made of elements. Each element usually has an opening tag, some content, and a closing tag:
+
+```html
+<p>This is a paragraph.</p>
+```
+
+`<p>` is the opening tag. `</p>` is the closing tag (note the forward slash, `/`). Everything between them is the content of the element.
+
+Some elements don't have content and don't need a closing tag:
+
+```html
+<br>
+<img src="photo.jpg">
+```
+
+`<br>` is a line break. `<img>` displays an image. These are called "void elements" or "self-closing elements."
+
+Elements can have attributes, which provide extra information:
+
+```html
+<a href="https://example.com">Click here</a>
+<img src="photo.jpg" alt="An Ipanema sunset">
+```
+
+The `href` attribute tells the link where to go. The `src` attribute tells the image which file to load. The `alt` attribute provides text for screen readers and for when the image fails to load. Attributes always go in the opening tag, and they follow the pattern `name="value"`.
+
+Let's take a look at a complete HTML document and the relevant elements next.
+
+## A Complete HTML Document
+
+Here's the minimal structure of an HTML page:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+</head>
+<body>
+    <h1>Hello, world!</h1>
+    <p>This is my first webpage.</p>
+</body>
+</html>
+```
+
+`<!DOCTYPE html>` tells the browser this is an HTML5 document. It's not technically a tag, just a declaration that should be at the top of every HTML file.
+
+`<html>` is the root element. Everything else goes inside it.
+
+`<head>` contains metadata about the page: the title (which appears in the browser tab), links to stylesheets, and other information that doesn't appear on the page itself.
+
+`<body>` contains everything visible on the page. This is where your actual content goes.
+
+`<title>` sets what appears in the browser tab and in search results. It's important but easy to forget.
+
+To see this in action, create a file called `index.html` on your computer, paste the code above into it, and open it in your browser. You should see "Hello, world!" as a heading and "This is my first webpage." as a paragraph. Here's what you should see:
+
+![Figure 2.1: A basic HTML page rendered in the browser](images/chapter2/figure-2-1-en.png)
+
+## Essential Tags
+
+You don't need to memorize every HTML tag. There are over a hundred, and you'll use maybe twenty regularly (plus you'll usually ask AI for some of it). It's useful knowing these ones to understand the structure better:
+
+**Headings** go from `<h1>` (most important) to `<h6>` (least important):
+
+```html
+<h1>Main Title</h1>
+<h2>Section Title</h2>
+<h3>Subsection Title</h3>
+```
+
+Use `<h1>` once per page for the main title. Use `<h2>` for major sections, `<h3>` for subsections within those. Don't skip levels just because you want smaller text (that's what CSS is for).
+
+**Paragraphs** are wrapped in `<p>` tags:
+
+```html
+<p>This is the first paragraph.</p>
+<p>This is the second paragraph.</p>
+```
+
+Without `<p>` tags, the browser ignores line breaks in your HTML and runs everything together.
+
+**Links** use the `<a>` tag (the "a" stands for anchor):
+
+```html
+<a href="https://example.com">Visit Example</a>
+<a href="/about">About Us</a>
+<a href="#section2">Jump to Section 2</a>
+```
+
+The `href` attribute is the destination. It can be a full URL, a path on the same site, or a fragment identifier (starting with `#`) to jump to an element on the current page.
+
+**Images** use the `<img>` tag:
+
+```html
+<img src="photo.jpg" alt="Description of the image">
+```
+
+The `src` attribute is the path to the image file. The `alt` attribute is required for accessibility (screen readers read it aloud, and it displays if the image fails to load), plus it helps a lot with SEO - Search Engine Optimization (making your website easier to find in search engines like google).
+
+**Lists** come in two flavors. Unordered lists (bullet points):
+
+```html
+<ul>
+    <li>First item</li>
+    <li>Second item</li>
+    <li>Third item</li>
+</ul>
+```
+
+And ordered lists (numbered):
+
+```html
+<ol>
+    <li>First step</li>
+    <li>Second step</li>
+    <li>Third step</li>
+</ol>
+```
+
+`<ul>` stands for unordered list, `<ol>` for ordered list, and `<li>` for list item.
+
+**Divisions and spans** are generic containers:
+
+```html
+<div>
+    <p>This paragraph is inside a div.</p>
+    <p>So is this one.</p>
+</div>
+
+<p>This word is <span>highlighted</span> somehow.</p>
+```
+
+`<div>` is a block-level container (takes up the full width). `<span>` is an inline container (flows with the text). On their own, they don't do anything visible. They're useful for grouping elements so you can style them with CSS or manipulate them with JavaScript.
+
+**Line breaks and horizontal rules**:
+
+```html
+<p>First line<br>Second line</p>
+<hr>
+<p>Content after the horizontal line</p>
+```
+
+`<br>` forces a line break within a paragraph. `<hr>` draws a horizontal line (historically "horizontal rule") to separate content.
+
+## Semantic Markup
+
+Early HTML was full of tags like `<font>`, `<center>`, and `<b>`. These described how things should look, not what they meant. Modern HTML separates structure (HTML) from presentation (CSS).
+
+Semantic tags describe the meaning of content:
+
+```html
+<header>
+    <h1>My Website</h1>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+    </nav>
+</header>
+
+<main>
+    <article>
+        <h2>Article Title</h2>
+        <p>Article content...</p>
+    </article>
+</main>
+
+<footer>
+    <p>&copy; 2025 My Website</p>
+</footer>
+```
+
+`<header>` is for introductory content, usually at the top. `<nav>` is for navigation links. `<main>` is for the primary content of the page. `<article>` is for self-contained content that could stand alone. `<footer>` is for content at the bottom (copyright, contact info).
+
+You could build the same layout using only `<div>` tags:
+
+```html
+<div class="header">
+    <h1>My Website</h1>
+    <div class="nav">
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+    </div>
+</div>
+```
+
+In the browser, it looks like this:
+
+![Figure 2.2: Semantic HTML elements rendered in the browser](images/chapter2/figure-2-2-en.png)
+
+Both approaches render the same way. But semantic tags help screen readers understand the page structure, help search engines identify important content (better for SEO), and make your code easier to read.
+
+A few more semantic tags worth knowing:
+
+```html
+<section>  <!-- A thematic grouping of content -->
+<aside>    <!-- Content tangentially related to the main content -->
+<figure>   <!-- Self-contained content like images with captions -->
+<figcaption>  <!-- Caption for a figure -->
+<time>     <!-- A date or time -->
+<mark>     <!-- Highlighted text -->
+<strong>   <!-- Important text (renders bold by default) -->
+<em>       <!-- Emphasized text (renders italic by default) -->
+```
+
+Use `<strong>` when text is important, not just when you want bold. Use `<em>` when text is emphasized, not just when you want italics. Screen readers and search engines care about this distinction.
+
+## Links and Navigation
+
+Links are what make the web a web.
+
+A basic link:
+
+```html
+<a href="https://example.com">External Site</a>
+```
+
+Linking to a page on the same site:
+
+```html
+<a href="/about">About Us</a>
+<a href="/contact">Contact</a>
+```
+
+The leading `/` means "start from the root of the site." So if your site is at `example.com`, the link goes to `example.com/about`.
+
+Linking to a section on the same page:
+
+```html
+<a href="#pricing">Jump to Pricing</a>
+
+<!-- later in the document -->
+<h2 id="pricing">Pricing</h2>
+```
+
+The `#pricing` in the href matches the `id="pricing"` on the target element. Clicking the link scrolls the page to that element.
+
+Opening a link in a new tab:
+
+```html
+<a href="https://example.com" target="_blank">Opens in new tab</a>
+```
+
+Users generally expect to control whether links open in new tabs, so only use this when necessary.
+
+Linking an image:
+
+```html
+<a href="/products">
+    <img src="product.jpg" alt="Our product">
+</a>
+```
+
+Any element can go inside an `<a>` tag, making the entire thing clickable.
+
+A navigation menu is typically a list of links inside a `<nav>` element:
+
+```html
+<nav>
+    <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/products">Products</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contact">Contact</a></li>
+    </ul>
+</nav>
+```
+
+By default this renders as a bulleted list. With CSS you can remove the bullets and arrange the links horizontally or vertically as needed.
+
+## Forms
+
+Forms are how users send data back to the server. When you log in, search for something, or submit a comment, you're using a form.
+
+A simple form:
+
+```html
+<form action="/search" method="GET">
+    <input type="text" name="q" placeholder="Search...">
+    <button type="submit">Search</button>
+</form>
+```
+
+The `action` attribute is where the form data gets sent (a URL). The `method` is the HTTP method to use (GET or POST, which we covered in Chapter 1).
+
+When you submit this form, the browser makes a request to `/search?q=whatever` where "whatever" is what you typed in the input field.
+
+The `name` attribute is critical. It becomes the key in the query string or form data. Without a name, the input's value won't be sent.
+
+**Text inputs**:
+
+```html
+<input type="text" name="username" placeholder="Username">
+<input type="email" name="email" placeholder="Email address">
+<input type="password" name="password" placeholder="Password">
+<input type="number" name="age" placeholder="Age">
+```
+
+The `type` attribute changes the behavior. `email` shows an email keyboard on mobile and validates the format. `password` hides the characters. `number` only allows digits.
+
+**Labels** make forms accessible:
+
+```html
+<label for="username">Username</label>
+<input type="text" id="username" name="username">
+```
+
+The `for` attribute matches the `id` of the input. Clicking the label focuses the input. Screen readers read the label when the input is focused.
+
+You can also wrap the input inside the label:
+
+```html
+<label>
+    Username
+    <input type="text" name="username">
+</label>
+```
+
+This achieves the same effect without needing `for` and `id`.
+
+**Textareas** are for multi-line text:
+
+```html
+<label for="message">Message</label>
+<textarea id="message" name="message" rows="5"></textarea>
+```
+
+**Select dropdowns**:
+
+```html
+<label for="country">Country</label>
+<select id="country" name="country">
+    <option value="">Choose...</option>
+    <option value="us">United States</option>
+    <option value="uk">United Kingdom</option>
+    <option value="ca">Canada</option>
+</select>
+```
+
+The `value` attribute is what gets sent to the server. The text between the tags is what the user sees.
+
+**Checkboxes and radio buttons**:
+
+```html
+<label>
+    <input type="checkbox" name="newsletter" value="yes">
+    Subscribe to newsletter
+</label>
+
+<fieldset>
+    <legend>Preferred contact method</legend>
+    <label>
+        <input type="radio" name="contact" value="email"> Email
+    </label>
+    <label>
+        <input type="radio" name="contact" value="phone"> Phone
+    </label>
+</fieldset>
+```
+
+Radio buttons with the same `name` attribute form a group. Only one can be selected. Checkboxes are independent.
+
+**Submit buttons**:
+
+```html
+<button type="submit">Send</button>
+<!-- or -->
+<input type="submit" value="Send">
+```
+
+Both work. The `<button>` tag is more flexible because you can put other elements inside it.
+
+A complete form might look like this:
+
+```html
+<form action="/contact" method="POST">
+    <div>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required>
+    </div>
+
+    <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+    </div>
+
+    <div>
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="5" required></textarea>
+    </div>
+
+    <button type="submit">Send Message</button>
+</form>
+```
+
+The `required` attribute prevents submission if the field is empty. The browser handles this validation automatically. Here's how the form renders:
+
+![Figure 2.3: A contact form rendered in the browser](images/chapter2/figure-2-3-en.png)
+
+Plain, but functional. The styling comes later.
+
+Forms are essential for web applications. We'll revisit them in Chapter 6 when we learn how to receive and process form data on the server.
+
+## Hands-On: Personal Profile Page
+
+Let's build a complete HTML page that uses everything we've covered. Create a file called `profile.html` and build a personal profile page.
+
+Your page should include:
+
+1. A proper document structure (`<!DOCTYPE html>`, `<html>`, `<head>`, `<body>`)
+2. A title that appears in the browser tab
+3. A header with your name as an `<h1>` and a navigation menu
+4. A main section with:
+   - An "About Me" section with a few paragraphs
+   - A "Skills" section with an unordered list
+   - A "Contact" section with a simple contact form
+5. A footer with copyright text
+
+Here's a starting point:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Name - Profile</title>
+</head>
+<body>
+    <header>
+        <h1>Your Name</h1>
+        <nav>
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="about">
+            <h2>About Me</h2>
+            <!-- Add paragraphs about yourself -->
+        </section>
+
+        <section id="skills">
+            <h2>Skills</h2>
+            <!-- Add an unordered list of skills -->
+        </section>
+
+        <section id="contact">
+            <h2>Contact</h2>
+            <!-- Add a contact form -->
+        </section>
+    </main>
+
+    <footer>
+        <!-- Add copyright -->
+    </footer>
+</body>
+</html>
+```
+
+Fill in the blanks. Add real content about yourself (or about a character, be creative). The navigation links use fragment identifiers to jump to each section.
+
+Open the file in your browser to see the result. It won't look pretty (that's what CSS is for), but the structure should be clear. Try viewing the page source in your browser. What you see should match what you wrote.
+
+Click the navigation links and watch the page scroll. With the template above (and some content filled in), you'll see something like this:
+
+![Figure 2.4: The profile page template rendered in the browser](images/chapter2/figure-2-4-en.png)
+
+Ugly, I know. Bug, again, Structure first, style later.
+
+## Chapter Summary
+
+- HTML describes the structure of a document using tags
+- Elements have opening tags, content, and closing tags: `<p>content</p>`
+- Attributes provide extra information: `<a href="url">link</a>`
+- Every page needs `<!DOCTYPE html>`, `<html>`, `<head>`, and `<body>`
+- Semantic tags (`<header>`, `<main>`, `<article>`, `<nav>`) describe meaning
+- Links (`<a>`) connect pages; forms (`<form>`) collect user input
+- The `name` attribute on form inputs determines what gets sent to the server
+
+The page you built works, but it's visually plain. In the next chapter, we'll add CSS to control colors, spacing, fonts, and layout.
+
+## Exercises
+
+1. Add an image to your profile page. Find a photo online or use a placeholder service like `https://placekitten.com/200/200`. Remember the `alt` attribute.
+
+2. Create a second HTML file called `projects.html` with a list of projects (real or imaginary). Add a link to it from your profile page's navigation, and add a link back to the profile page.
+
+3. Expand your contact form to include a dropdown for "Reason for contact" with options like "General inquiry," "Job opportunity," and "Other."
+
+4. Using only HTML (no CSS), try to create a simple table showing your weekly schedule. Look up the `<table>`, `<tr>`, `<th>`, and `<td>` tags.
+
+5. View the source of three different websites. Look at how they structure their HTML. Can you find the `<header>`, `<main>`, and `<footer>` sections? How deeply nested are their elements?
+
+6. Use the browser's developer tools (right-click, "Inspect") on your profile page. Try editing the HTML directly in the inspector. What happens when you change an element's text or delete a tag? (Don't worry, refreshing the page restores everything. You're changing stuff at the client.)
