@@ -13,6 +13,7 @@ book:
     - chapters/chapter2.qmd
     - chapters/chapter3.qmd
     - chapters/chapter4.qmd
+    - chapters/chapter5.qmd
     - references.qmd
 
 format:

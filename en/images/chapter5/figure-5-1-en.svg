@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 300">
+  <style>
+    .background { fill: #f8f9fa; }
+    .data-box { fill: #fff7e6; stroke: #fa8c16; stroke-width: 1.5; }
+    .template-box { fill: #f6ffed; stroke: #52c41a; stroke-width: 1.5; }
+    .engine-box { fill: #f5f5f5; stroke: #999; stroke-width: 1.5; }
+    .output-box { fill: #e6f7ff; stroke: #1890ff; stroke-width: 1.5; }
+    .arrow { stroke: #666; stroke-width: 1.5; fill: none; }
+    .label { font-family: 'Arial', sans-serif; font-size: 12px; text-anchor: middle; fill: #333; }
+    .label-small { font-family: 'Arial', sans-serif; font-size: 11px; text-anchor: middle; fill: #666; }
+    .code-text { font-family: 'Consolas', 'Monaco', monospace; font-size: 11px; fill: #555; text-anchor: start; }
+    .title { font-family: 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+    .box-title { font-family: 'Arial', sans-serif; font-size: 13px; font-weight: bold; text-anchor: middle; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#666" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="750" height="300" class="background" />
+
+  <!-- Title -->
+  <text x="375" y="30" class="title">How Template Rendering Works</text>
+
+  <!-- Python Data box -->
+  <rect x="30" y="60" width="160" height="130" rx="6" ry="6" class="data-box" />
+  <text x="110" y="85" class="box-title" fill="#d46b08">Python Data</text>
+  <text x="45" y="110" class="code-text">context = {</text>
+  <text x="55" y="128" class="code-text">"title": "My Site",</text>
+  <text x="55" y="146" class="code-text">"name": "World"</text>
+  <text x="45" y="164" class="code-text">}</text>
+
+  <!-- Arrow 1 -->
+  <line x1="190" y1="125" x2="230" y2="125" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Template box -->
+  <rect x="240" y="60" width="180" height="130" rx="6" ry="6" class="template-box" />
+  <text x="330" y="85" class="box-title" fill="#389e0d">Template File</text>
+  <text x="255" y="110" class="code-text">&lt;title&gt;</text>
+  <text x="265" y="128" class="code-text">{{ title }}</text>
+  <text x="255" y="146" class="code-text">&lt;/title&gt;</text>
+  <text x="255" y="164" class="code-text">Hello, {{ name }}!</text>
+
+  <!-- Arrow 2 -->
+  <line x1="420" y1="125" x2="460" y2="125" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Jinja Engine box -->
+  <rect x="470" y="80" width="90" height="90" rx="6" ry="6" class="engine-box" />
+  <text x="515" y="120" class="label">Jinja</text>
+  <text x="515" y="140" class="label-small">Engine</text>
+
+  <!-- Arrow 3 -->
+  <line x1="560" y1="125" x2="600" y2="125" class="arrow" marker-end="url(#arrowhead)" />
+
+  <!-- Final HTML box -->
+  <rect x="610" y="60" width="120" height="130" rx="6" ry="6" class="output-box" />
+  <text x="670" y="85" class="box-title" fill="#1890ff">Final HTML</text>
+  <text x="625" y="110" class="code-text">&lt;title&gt;</text>
+  <text x="635" y="128" class="code-text">My Site</text>
+  <text x="625" y="146" class="code-text">&lt;/title&gt;</text>
+  <text x="625" y="164" class="code-text">Hello, World!</text>
+
+  <!-- Labels underneath -->
+  <text x="110" y="215" class="label-small">Your Python code</text>
+  <text x="110" y="230" class="label-small">provides the values</text>
+
+  <text x="330" y="215" class="label-small">HTML with</text>
+  <text x="330" y="230" class="label-small">{{ placeholders }}</text>
+
+  <text x="515" y="215" class="label-small">Fills in</text>
+  <text x="515" y="230" class="label-small">the blanks</text>
+
+  <text x="670" y="215" class="label-small">Sent to</text>
+  <text x="670" y="230" class="label-small">the browser</text>
+
+  <!-- Bottom note -->
+  <text x="375" y="270" class="label-small">The template stays the same. The data changes. Different data, different pages.</text>
+</svg>
