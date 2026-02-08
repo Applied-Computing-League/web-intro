@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 340">
+  <style>
+    .background { fill: #f8f9fa; }
+    .margin-box { fill: #ffd8a8; stroke: #e8590c; stroke-width: 1.5; }
+    .border-box { fill: #a5d8ff; stroke: #1971c2; stroke-width: 1.5; }
+    .padding-box { fill: #b2f2bb; stroke: #2f9e44; stroke-width: 1.5; }
+    .content-box { fill: #e9ecef; stroke: #868e96; stroke-width: 1.5; }
+    .label { font-family: 'Arial', sans-serif; font-size: 13px; text-anchor: middle; }
+    .label-margin { fill: #c92a2a; }
+    .label-border { fill: #1864ab; }
+    .label-padding { fill: #2b8a3e; }
+    .label-content { fill: #495057; }
+    .title { font-family: 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+    .note { font-family: 'Arial', sans-serif; font-size: 11px; fill: #666; text-anchor: middle; }
+  </style>
+
+  <!-- Background -->
+  <rect width="500" height="340" class="background" />
+
+  <!-- Title -->
+  <text x="250" y="28" class="title">The CSS Box Model</text>
+
+  <!-- Margin (outermost) -->
+  <rect x="50" y="50" width="400" height="250" class="margin-box" rx="4" ry="4" />
+
+  <!-- Border -->
+  <rect x="90" y="90" width="320" height="170" class="border-box" rx="4" ry="4" />
+
+  <!-- Padding -->
+  <rect x="130" y="130" width="240" height="90" class="padding-box" rx="4" ry="4" />
+
+  <!-- Content (innermost) -->
+  <rect x="170" y="160" width="160" height="40" class="content-box" rx="2" ry="2" />
+  <text x="250" y="186" class="label label-content">content</text>
+
+  <!-- Labels positioned in their respective areas -->
+  <!-- Margin label (top area between margin edge and border edge) -->
+  <text x="250" y="75" class="label label-margin">margin</text>
+
+  <!-- Border label (left side, in the border area) -->
+  <text x="110" y="180" class="label label-border" transform="rotate(-90, 110, 180)">border</text>
+
+  <!-- Padding label (top area between border edge and content) -->
+  <text x="250" y="150" class="label label-padding">padding</text>
+
+  <!-- Right side dimension indicators -->
+  <!-- Margin indicator -->
+  <line x1="460" y1="50" x2="460" y2="90" stroke="#c92a2a" stroke-width="1.5" />
+  <line x1="455" y1="50" x2="465" y2="50" stroke="#c92a2a" stroke-width="1.5" />
+  <line x1="455" y1="90" x2="465" y2="90" stroke="#c92a2a" stroke-width="1.5" />
+
+  <!-- Border indicator -->
+  <line x1="420" y1="90" x2="420" y2="130" stroke="#1864ab" stroke-width="1.5" />
+  <line x1="415" y1="90" x2="425" y2="90" stroke="#1864ab" stroke-width="1.5" />
+  <line x1="415" y1="130" x2="425" y2="130" stroke="#1864ab" stroke-width="1.5" />
+
+  <!-- Padding indicator -->
+  <line x1="380" y1="130" x2="380" y2="160" stroke="#2b8a3e" stroke-width="1.5" />
+  <line x1="375" y1="130" x2="385" y2="130" stroke="#2b8a3e" stroke-width="1.5" />
+  <line x1="375" y1="160" x2="385" y2="160" stroke="#2b8a3e" stroke-width="1.5" />
+
+  <!-- Bottom note -->
+  <text x="250" y="320" class="note">Total width = content + padding + border (+ margin for spacing)</text>
+</svg>

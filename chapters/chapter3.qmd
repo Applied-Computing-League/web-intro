@@ -1,0 +1,578 @@
+# Chapter 3: CSS Basics
+
+The profile page we built in the last chapter works, but it looks like it's from the 90s (you're probably not even old enough to remember). The headings are black, the background is white, the links are blue and underlined, and everything is aligned and cramped to the left. HTML gives you structure, but it doesn't give you control over how things look. That's what CSS is for.
+
+CSS stands for Cascading Style Sheets. It's the language that controls colors, fonts, spacing, and layout. When you visit a website that looks good (or bad), that's CSS at work. HTML says "this is a heading." CSS says "this heading should be dark blue, 32 pixels tall, and have some space below it."
+
+Like HTML, CSS isn't a programming language. You write rules that describe how elements should look, and the browser applies them. Now let's see how to actually connect the two and apply CSS styles to our HTML structured text.
+
+## How CSS Connects to HTML
+
+There are three ways to add CSS to an HTML page.
+
+**Inline styles** go directly on an element using the `style` attribute:
+
+```html
+<p style="color: red; font-size: 18px;">This paragraph is red and larger.</p>
+```
+
+This works, but it's messy. If you want all your paragraphs to look the same, you'd have to copy that style attribute everywhere. And if you want to change it later, you'd have to find every instance to change.
+
+**Internal stylesheets** go in a `<style>` tag in the `<head>`:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <style>
+        p {
+            color: red;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <p>This paragraph is red and larger.</p>
+    <p>So is this one.</p>
+</body>
+</html>
+```
+
+Now every paragraph on the page gets the same style. Change it once, it changes everywhere. This is already better, but the CSS is still tied to this specific HTML file.
+
+**External stylesheets** put the CSS in a separate file, so we'd have a `style.css` file with:
+
+```css
+/* styles.css */
+p {
+    color: red;
+    font-size: 18px;
+}
+```
+
+And a `index.html` file with:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Page</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <p>This paragraph is red and larger.</p>
+</body>
+</html>
+```
+
+The `<link>` tag tells the browser to load `styles.css` and apply it to this page. This is the approach we actually use for real projects. It keeps your HTML clean and lets multiple pages share the same styles.
+
+For the rest of this chapter, I'll show CSS rules and not necessarily show the related HTML. Assume they're either in a `<style>` tag or an external file.
+
+## Selectors and Properties
+
+A CSS rule has two parts: a selector (what to style) and a declaration block (how to style it):
+
+```css
+h1 {
+    color: navy;
+    font-size: 32px;
+}
+```
+
+`h1` is the selector. It matches all `<h1>` elements on the page.
+
+Inside the curly braces are declarations. Each declaration has a property (`color`, `font-size`) and a value (`navy`, `32px`). Properties and values are separated by a colon (`:`). Declarations end with a semicolon (`;`).
+
+**Element selectors** match HTML tags:
+
+```css
+p {
+    color: #333;
+}
+
+a {
+    color: blue;
+}
+
+h1, h2, h3 {
+    font-family: Georgia, serif;
+}
+```
+
+That last one is a group selector. It applies the same style to `h1`, `h2`, and `h3` elements.
+
+**Class selectors** match elements with a specific class attribute. They start with a dot:
+
+```html
+<p class="intro">This is the introduction.</p>
+<p>This is a regular paragraph.</p>
+```
+
+And creating the style:
+
+```css
+.intro {
+    font-size: 20px;
+    font-weight: bold;
+}
+```
+
+Only the paragraph with `class="intro"` gets the larger, bold text. Classes are reusable. You can put the same class on as many elements as you want.
+
+**ID selectors** match a single element with a specific id. They start with a hash (`#`):
+
+```html
+<header id="main-header">
+    <h1>My Website</h1>
+</header>
+```
+
+And creating the style that applies to the id:
+
+```css
+#main-header {
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+```
+
+IDs should be unique on a page. Don't overuse this pattern, classes are more flexible and usually preferred.
+
+**Descendant selectors** match elements inside other elements:
+
+```css
+nav a {
+    color: white;
+    text-decoration: none;
+}
+```
+
+This matches `<a>` elements that are inside a `<nav>`. Links elsewhere on the page aren't affected.
+
+**Combining selectors**:
+
+```css
+header nav a {
+    color: white;
+}
+
+p.intro {
+    font-size: 20px;
+}
+```
+
+The first matches links inside nav inside header. The second matches paragraphs with the class "intro" (not all elements with that class, just paragraphs).
+
+There are more selectors (attribute selectors, pseudo-classes, pseudo-elements), but these cover most of what you'll need.
+
+## Common Properties
+
+CSS has hundreds of properties, but we'll focus on the ones you'll see constantly.
+
+**Colors**:
+
+```css
+h1 {
+    color: navy;                 /* text color */
+    background-color: #f0f0f0;   /* background */
+}
+```
+
+Colors can be names (`red`, `navy`, `white`), hex codes (`#ff0000`, `#f0f0f0`), or RGB values (`rgb(255, 0, 0)`). Hex codes are most common.
+
+**Typography**:
+
+```css
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+h1 {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.subtle {
+    font-style: italic;
+    color: #666;
+}
+```
+
+`font-family` takes a list of fonts. The browser uses the first one it has. Always end with a generic family (`serif`, `sans-serif`, `monospace`).
+
+`line-height` controls spacing between lines. A unitless number like `1.5` means 1.5 times the font size.
+
+**Spacing**:
+
+```css
+p {
+    margin: 20px;    /* space outside the element */
+    padding: 10px;   /* space inside the element */
+}
+```
+
+The difference between margin and padding matters once you understand the box model (next section).
+
+You can set each side separately:
+
+```css
+p {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+/* shorthand: top right bottom left */
+p {
+    margin: 20px 0 20px 0;
+}
+
+/* shorthand: vertical horizontal */
+p {
+    margin: 20px 0;
+}
+```
+
+**Borders**:
+
+```css
+.card {
+    border: 1px solid #ccc;
+    border-radius: 8px;         /* rounded corners */
+}
+```
+
+**Size**:
+
+```css
+img {
+    width: 200px;
+    height: auto;               /* maintain aspect ratio */
+}
+
+.container {
+    max-width: 800px;           /* won't grow larger than this */
+}
+```
+
+**Text**:
+
+```css
+h1 {
+    text-align: center;
+}
+
+a {
+    text-decoration: none;      /* removes underline */
+}
+
+.uppercase {
+    text-transform: uppercase;
+}
+```
+
+## The Box Model
+
+Every HTML element is a box. Each box has four layers, from inside to outside:
+
+1. **Content**: The actual text, image, or other content
+2. **Padding**: Space between the content and the border
+3. **Border**: A line around the padding
+4. **Margin**: Space between this element and others
+
+![The CSS Box Model](images/chapter3/figure-3-1-en.svg)
+
+Here's an example:
+
+```css
+.card {
+    width: 300px;
+    padding: 20px;
+    border: 2px solid black;
+    margin: 10px;
+}
+```
+
+How wide is this element on the page? It's not 300px. By default, `width` sets only the content width. The total width is composed of these:
+
+- Content: 300px
+- Padding: 20px left + 20px right = 40px
+- Border: 2px left + 2px right = 4px
+- Total: 344px (margin doesn't count toward the element's size, but does affect spacing)
+
+This math is annoying, but there's a fix:
+
+```css
+* {
+    box-sizing: border-box;
+}
+```
+
+With `box-sizing: border-box`, `width` includes padding and border. Now if you set `width: 300px`, the element is actually 300px wide, and the browser subtracts space for padding and border from the content area.
+
+Most developers add this rule to every project. Put it at the top of your CSS file.
+
+**Margins collapse**. If two elements are stacked vertically and one has `margin-bottom: 20px` and the next has `margin-top: 30px`, the space between them is 30px (not 50px). The larger margin wins. This is intentional, but it can be confusing (CSS is often a pain, get used to it).
+
+## Layout with Flexbox
+
+Getting elements to sit next to each other used to be more painful. CSS had `float`, which was designed for wrapping text around images and was hacked to do layout. It was confusing and error-prone.
+
+Flexbox (Flexible Box Layout) was designed specifically for layout. It makes things like centering, spacing, and alignment easy.
+
+To use flexbox, set `display: flex` on a container:
+
+```html
+<nav class="main-nav">
+    <a href="/">Home</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+</nav>
+```
+
+The css:
+
+```css
+.main-nav {
+    display: flex;
+}
+```
+
+The links now sit side by side instead of stacking vertically. The container is a "flex container" and its children are "flex items."
+
+**justify-content** controls horizontal alignment:
+
+```css
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+}
+```
+
+You have some options for it:
+
+- `flex-start`: items at the start (default)
+- `flex-end`: items at the end
+- `center`: items in the center
+- `space-between`: items spread out, first at start, last at end
+- `space-around`: items spread out with space around each
+- `space-evenly`: items spread out with equal space between
+
+**align-items** controls vertical alignment:
+
+```css
+.main-nav {
+    display: flex;
+    align-items: center;
+}
+```
+
+There are also a few options:
+
+- `stretch`: items stretch to fill container height (default)
+- `flex-start`: items at the top
+- `flex-end`: items at the bottom
+- `center`: items vertically centered
+
+**gap** adds space between items:
+
+```css
+.main-nav {
+    display: flex;
+    gap: 20px;
+}
+```
+
+This is cleaner than adding margin to each item.
+
+**flex-direction** controls which way items flow:
+
+```css
+.sidebar {
+    display: flex;
+    flex-direction: column;
+}
+```
+
+And the options:
+
+- `row`: left to right (default)
+- `column`: top to bottom
+- `row-reverse`: right to left
+- `column-reverse`: bottom to top
+
+When you change direction, `justify-content` and `align-items` swap roles. In a column layout, `justify-content` controls vertical spacing and `align-items` controls horizontal alignment.
+
+**Centering with flexbox** is finally easy:
+
+```css
+.centered-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;          /* full viewport height */
+}
+```
+
+This centers the content both horizontally and vertically. Before flexbox, this was a lot harder to do.
+
+Here's a common page layout:
+
+```css
+.page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.page header {
+    padding: 20px;
+    background: #333;
+    color: white;
+}
+
+.page main {
+    flex: 1;             /* grow to fill available space */
+    padding: 20px;
+}
+
+.page footer {
+    padding: 20px;
+    background: #333;
+    color: white;
+}
+```
+
+The `flex: 1` on `main` tells it to grow and fill whatever space is left after header and footer. This keeps the footer at the bottom even when there's not much content.
+
+## Hands-On: Styling the Profile Page
+
+Let's make the profile page from Chapter 2 look better. Create a file called `profile.css` in the same folder as your `profile.html`.
+
+First, link the stylesheet by adding this to the `<head>` of your HTML:
+```html
+<link rel="stylesheet" href="profile.css">
+```
+
+Now let's build the CSS step by step. Start with the basics:
+```css
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+```
+
+The `font-family` line uses system fonts. The browser picks whichever one the user's operating system has. This looks native on every platform.
+
+Style the header:
+```css
+header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.5em;
+}
+
+header nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+header nav a {
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+}
+
+header nav a:hover {
+    text-decoration: underline;
+}
+```
+
+The `:hover` pseudo-class applies when the mouse is over the element.
+
+Style the main content:
+```css
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+section {
+    margin-bottom: 40px;
+}
+
+h2 {
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+```
+
+`margin: 0 auto` centers a block element horizontally (the `auto` margins on left and right split the remaining space equally).
+
+Now it's your turn. Using what you've learned, style these remaining elements:
+
+**The skills list** should display as horizontal tags instead of bullet points. Remove the default list styling, use flexbox to arrange the items in a row, and make each skill look like a pill (background color, padding, rounded corners). Allow items to wrap if they don't fit on one line.
+
+**The contact form** should have its fields stacked vertically with some space between them. Style the inputs and textarea with padding, a border, and rounded corners. Make the submit button stand out with a background color, and add a hover effect so users know it's clickable.
+
+**The footer** should match the header's style (same background color, white text, centered).
+
+Experiment and check your results in the browser as you go. If you get stuck, the `:focus` pseudo-class is useful for styling form fields when they're selected, and `cursor: pointer` on buttons tells the browser to show the pointing hand cursor.
+
+::: {.callout-tip collapse="true"}
+## Stuck? Solution available
+
+If you've given it an honest try and are truly stuck, a completed version of this project is available at [github.com/Applied-Computing-League/web-intro/chapters/code/chapter3](https://github.com/Applied-Computing-League/web-intro/tree/main/chapters/code/chapter3). Try to solve it yourself first. You learn more from the struggle than from reading the answer.
+:::
+
+When you're done, your page should look something like this:
+
+![The styled profile page](images/chapter3/figure-3-2-en.png)
+
+Try resizing your browser window. The layout should adapt reasonably well. The header stays centered, the content has a maximum width, and the skills wrap to new lines.
+
+## Chapter Summary
+
+- CSS controls how HTML elements look: colors, fonts, spacing, layout
+- Connect CSS to HTML with `<link rel="stylesheet" href="file.css">`
+- Selectors target elements: `p` (element), `.class` (class), `#id` (ID)
+- The box model: content + padding + border + margin
+- Use `box-sizing: border-box` to make width calculations simpler
+- Flexbox handles layout: `display: flex`, `justify-content`, `align-items`, `gap`
+
+We now have a styled page, but it's still static. In the next chapter, we'll start building a server that can generate pages dynamically.
+
+## Exercises
+
+1. Change the color scheme of your profile page. Pick a different primary color and update the header, footer, links, and buttons to match.
+
+2. Add a hover effect to the skill tags. Maybe they change color, grow slightly, or get a shadow. Look up `transform: scale()` and `box-shadow`.
+
+3. Make the navigation links look like buttons instead of plain text links. Add background colors, padding, and rounded corners.
+
+4. Add a profile image (real or placeholder) to the header. Center it above your name. Make it circular using `border-radius: 50%`.
+
+5. Create a "projects" section with three project cards side by side. Each card should have a title, description, and a "View Project" link. Use flexbox to arrange them in a row, and make them wrap on smaller screens.
+
+6. Using developer tools, inspect your styled page. Find an element and try changing its CSS values in the inspector. Watch how the page updates in real time. This is useful for experimenting before changing your actual CSS file.

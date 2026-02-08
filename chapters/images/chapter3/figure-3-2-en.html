@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Philipe Ackerman - Profile</title>
+        <link rel="stylesheet" href="profile.css" />
+    </head>
+    <body>
+        <header>
+            <h1>Philipe Ackerman</h1>
+            <nav>
+                <a href="#about">About</a> | <a href="#skills">Skills</a> |
+                <a href="#contact">Contact</a>
+            </nav>
+        </header>
+
+        <main>
+            <section id="about">
+                <h2>About Me</h2>
+                <p>Hi! I'm a math professor, and a really good one at that.</p>
+                <p>
+                    When I'm not teaching, you can find me cheering for my
+                    socker team, Botafogo.
+                </p>
+            </section>
+
+            <section id="skills">
+                <h2>Skills</h2>
+                <ul>
+                    <li>Math</li>
+                    <li>Having a Long Hair</li>
+                    <li>Video Recording</li>
+                </ul>
+            </section>
+
+            <section id="contact">
+                <h2>Contact</h2>
+                <form action="/contact" method="POST">
+                    <div>
+                        <label for="name">Name</label><br />
+                        <input type="text" id="name" name="name" required />
+                    </div>
+                    <br />
+                    <div>
+                        <label for="email">Email</label><br />
+                        <input type="email" id="email" name="email" required />
+                    </div>
+                    <br />
+                    <div>
+                        <label for="message">Message</label><br />
+                        <textarea
+                            id="message"
+                            name="message"
+                            rows="4"
+                            required
+                        ></textarea>
+                    </div>
+                    <br />
+                    <button type="submit">Send Message</button>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            <hr />
+            <p>&copy; 2025 Philipe Ackerman</p>
+        </footer>
+    </body>
+</html>

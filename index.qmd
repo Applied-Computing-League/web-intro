@@ -29,6 +29,8 @@ Type the code yourself. Don't copy and paste. The errors you make and fix along 
 
 When you get stuck, resist asking AI for the solution. Ask for a hint if you need to, but do the thinking yourself. Struggling is normal. It's also how you actually learn, rather than just feeling like you're learning.
 
+The complete code for each chapter's hands-on project is available at [github.com/Applied-Computing-League/web-intro](https://github.com/Applied-Computing-League/web-intro). Consider it a last resort. If you look at the solution before genuinely struggling with the problem, you're only cheating yourself out of the learning.
+
 ## Prerequisites {.unnumbered}
 
 You'll need:

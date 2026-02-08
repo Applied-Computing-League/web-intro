@@ -11,7 +11,7 @@ book:
     - index.qmd
     - chapters/chapter1.qmd
     - chapters/chapter2.qmd
-    # - chapters/chapter3.qmd
+    - chapters/chapter3.qmd
     # - chapters/chapter4.qmd
     # - chapters/chapter5.qmd
     # - chapters/chapter6.qmd
