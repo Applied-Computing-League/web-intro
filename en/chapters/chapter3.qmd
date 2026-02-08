@@ -285,7 +285,7 @@ Every HTML element is a box. Each box has four layers, from inside to outside:
 3. **Border**: A line around the padding
 4. **Margin**: Space between this element and others
 
-![The CSS Box Model](images/chapter3/figure-3-1-en.svg)
+![The CSS Box Model](../images/chapter3/figure-3-1-en.svg)
 
 Here's an example:
 
@@ -548,7 +548,7 @@ If you've given it an honest try and are truly stuck, a completed version of thi
 
 When you're done, your page should look something like this:
 
-![The styled profile page](images/chapter3/figure-3-2-en.png)
+![The styled profile page](../images/chapter3/figure-3-2-en.png)
 
 Try resizing your browser window. The layout should adapt reasonably well. The header stays centered, the content has a maximum width, and the skills wrap to new lines.
 

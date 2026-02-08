@@ -12,7 +12,7 @@ A web server's job is simple: wait for HTTP requests, then send HTTP responses. 
 
 When you run a server on your computer, it listens on a port (usually 8000 for development). When a browser makes a request to `http://localhost:8000/about`, your server receives that request, sees that the path is `/about`, runs whatever code you've associated with that path, and sends back the result.
 
-![Your code handles the request](images/chapter4/figure-4-1-en.svg)
+![Your code handles the request](../images/chapter4/figure-4-1-en.svg)
 
 The code you write defines what happens for each path. Visit `/`? Run this function. Visit `/about`? Run that function. Visit `/users/42`? Run another function and pass it the number 42. This mapping from paths to functions is called **routing**.
 
@@ -157,7 +157,7 @@ Save the file. The server restarts automatically. Now try these URLs:
 
 Each `@app.get()` decorator registers a route. The path in the decorator determines which URL triggers which function. Here's what that mapping looks like:
 
-![Routing maps paths to functions](images/chapter4/figure-4-2-en.svg)
+![Routing maps paths to functions](../images/chapter4/figure-4-2-en.svg)
 
 The function names don't matter to FastAPI (you could call them all `def x():`), but good names make your code more readable and help with automatic documentation (we'll see more about this later).
 
@@ -183,7 +183,7 @@ Add it to your FastAPI application, then try these:
 
 That last one is interesting. You didn't write any validation code, but FastAPI returns a clear error message when the input is wrong. Here's what's happening behind the scenes:
 
-![FastAPI validates before your code runs](images/chapter4/figure-4-3-en.svg)
+![FastAPI validates before your code runs](../images/chapter4/figure-4-3-en.svg)
 
 That's the type hints doing their job. FastAPI checks the input, and if it doesn't match, your function never even runs.
 
@@ -238,7 +238,7 @@ You've probably heard the term "API" before. It stands for Application Programmi
 
 Think of it like a language. When you call a function in Python, you need to know its name, what arguments it takes, and what it returns. That's an interface. A web API is the same idea, but over HTTP: it defines what URLs exist, what parameters they accept, and what data they return.
 
-![An API is a contract](images/chapter4/figure-4-4-en.svg)
+![An API is a contract](../images/chapter4/figure-4-4-en.svg)
 
 In web development, "API" usually means a server that returns structured data (often JSON) instead of HTML pages. When you visit a website, you're a human looking at HTML. When an app on your phone fetches your tweets or a JavaScript frontend fetches product data, it's code talking to an API. The API returns data in a format that code can easily parse and use.
 
@@ -400,7 +400,7 @@ The f-string inserts our profile data into the HTML. Change the name in the dict
 
 Run the server and visit `http://localhost:8000`. You should see the styled profile page:
 
-![The profile page served by FastAPI](images/chapter4/figure-4-5-en.png)
+![The profile page served by FastAPI](../images/chapter4/figure-4-5-en.png)
 
 Look at the Network tab in your dev tools. You'll see two requests: one for the HTML page and one for the CSS file.
 
@@ -410,7 +410,7 @@ The HTML-in-Python-strings approach is getting unwieldy though. Imagine a page w
 
 Before we wrap up, there's one more FastAPI feature worth seeing. Visit `http://localhost:8000/docs` while your server is running:
 
-![FastAPI generates interactive documentation](images/chapter4/figure-4-6-en.png)
+![FastAPI generates interactive documentation](../images/chapter4/figure-4-6-en.png)
 
 FastAPI automatically generates interactive documentation for all your endpoints. It shows the paths, the parameters, the expected types, and even lets you test the endpoints directly from the browser. This is generated from your code (the function names, type hints, and docstrings all contribute).
 

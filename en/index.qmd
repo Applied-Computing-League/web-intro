@@ -42,3 +42,9 @@ You'll need:
 - Willingness to read error messages instead of panicking
 
 You don't need any prior web development experience. You don't need to know HTML, CSS, or JavaScript. We'll cover what you need as we go.
+
+## Contributors {.unnumbered}
+
+| Name | Role |
+|------|------|
+| [Igor Benav](https://github.com/igorbenav) | Author |

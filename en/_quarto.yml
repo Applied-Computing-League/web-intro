@@ -1,6 +1,6 @@
 project:
   type: book
-  output-dir: docs
+  output-dir: ../docs/en
 
 book:
   title: "Practical Web Development"
@@ -13,15 +13,6 @@ book:
     - chapters/chapter2.qmd
     - chapters/chapter3.qmd
     - chapters/chapter4.qmd
-    # - chapters/chapter5.qmd
-    # - chapters/chapter6.qmd
-    # - chapters/chapter7.qmd
-    # - chapters/chapter8.qmd
-    # - chapters/chapter9.qmd
-    # - chapters/chapter10.qmd
-    # - chapters/chapter11.qmd
-    # - chapters/chapter12.qmd
-    # - chapters/chapter13.qmd
     - references.qmd
 
 format:
@@ -52,6 +43,7 @@ format:
         }
         </style>
   pdf:
+    output-file: "Practical Web Development (en)"
     pdf-engine: xelatex
     documentclass: scrreprt
     toc-depth: 2

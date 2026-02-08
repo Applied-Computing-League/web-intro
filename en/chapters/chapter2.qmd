@@ -67,7 +67,7 @@ Here's the minimal structure of an HTML page:
 
 To see this in action, create a file called `index.html` on your computer, paste the code above into it, and open it in your browser. You should see "Hello, world!" as a heading and "This is my first webpage." as a paragraph. Here's what you should see:
 
-![A basic HTML page rendered in the browser](images/chapter2/figure-2-1-en.png)
+![A basic HTML page rendered in the browser](../images/chapter2/figure-2-1-en.png)
 
 ## Essential Tags
 
@@ -198,7 +198,7 @@ You could build the same layout using only `<div>` tags:
 
 In the browser, it looks like this:
 
-![Semantic HTML elements rendered in the browser](images/chapter2/figure-2-2-en.png)
+![Semantic HTML elements rendered in the browser](../images/chapter2/figure-2-2-en.png)
 
 Both approaches render the same way. But semantic tags help screen readers understand the page structure, help search engines identify important content (better for SEO), and make your code easier to read.
 
@@ -407,7 +407,7 @@ A complete form might look like this:
 
 The `required` attribute prevents submission if the field is empty. The browser handles this validation automatically. Here's how the form renders:
 
-![A contact form rendered in the browser](images/chapter2/figure-2-3-en.png)
+![A contact form rendered in the browser](../images/chapter2/figure-2-3-en.png)
 
 Plain, but functional. The styling comes later.
 
@@ -482,7 +482,7 @@ Open the file in your browser to see the result. It won't look pretty (that's wh
 
 Click the navigation links and watch the page scroll. With the template above (and some content filled in), you'll see something like this:
 
-![The profile page template rendered in the browser](images/chapter2/figure-2-4-en.png)
+![The profile page template rendered in the browser](../images/chapter2/figure-2-4-en.png)
 
 Ugly, I know. Bug, again, Structure first, style later.
 
