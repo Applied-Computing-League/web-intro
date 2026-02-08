@@ -1,0 +1,554 @@
+# Chapter 5: Templates with Jinja
+
+At the end of Chapter 4, we had HTML inside a Python string. It worked, but it was ugly. The string got long, the indentation was awkward, and mixing Python with HTML made both harder to read. There's a better way.
+
+## Why Not Write HTML in Python?
+
+Look at the code we ended up with:
+```python
+@app.get("/", response_class=HTMLResponse)
+def home():
+    skills_html = "".join(f"<li>{skill}</li>" for skill in profile["skills"])
+    about_html = "".join(f"<p>{para}</p>" for para in profile["about"])
+
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>{profile["name"]} - Profile</title>
+        ...
+    """
+```
+
+This has problems. Your editor can't help you with HTML inside a string: no syntax highlighting, no autocomplete, no error checking. If you forget a closing tag, you won't know until you see broken output in the browser. And as pages get more complex, these strings become unmanageable.
+
+The solution is templates. A template is an HTML file with placeholders for dynamic content. You write your HTML in separate files where your editor can help you, mark where the data should go, and let a template engine fill in the blanks.
+
+We'll use Jinja, the most popular Python template engine. It's already installed with FastAPI.
+
+## Template Basics
+
+Create a new folder for this chapter and set it up:
+```bash
+mkdir chapter5
+cd chapter5
+uv init
+uv add "fastapi[standard]"
+```
+
+Now create a `templates` folder:
+```
+chapter5/
+├── .venv/
+├── main.py
+├── pyproject.toml
+└── templates/
+    └── home.html
+```
+
+In `templates/home.html`, write a simple template:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>Hello, {{ name }}!</h1>
+</body>
+</html>
+```
+
+The `{{ }}` syntax marks a placeholder. When the template renders, `{{ title }}` gets replaced with an actual value. This is just HTML with holes in it.
+
+Now set up FastAPI to use templates. In `main.py`:
+```python
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
+
+app = FastAPI()
+templates = Jinja2Templates(directory="templates")
+```
+
+The `Jinja2Templates` object knows where to find your template files. Now create a route that uses a template:
+```python
+# main.py
+# ...imports and setup above
+
+@app.get("/")
+def home(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="home.html",
+        context={"title": "My Site", "name": "World"}
+    )
+```
+
+A few things to note. The function takes a `request` parameter. FastAPI provides this automatically, and we pass it to `TemplateResponse` because Jinja needs it for certain features.
+
+The `name` is which template file to use. The `context` is a dictionary of values to fill in the placeholders. `{{ title }}` becomes "My Site" and `{{ name }}` becomes "World".
+
+Here's what happens when someone visits your page:
+
+![How template rendering works](../images/chapter5/figure-5-1-en.svg)
+
+Run the server with `uv run fastapi dev main.py` and visit `http://localhost:8000`. You should see "Hello, World!" with the page title "My Site". The HTML came from the template file, with the placeholders replaced by our data.
+
+## Passing Data to Templates
+
+The context dictionary can contain anything: strings, numbers, lists, dictionaries, even objects. Let's pass more interesting data:
+```python
+# main.py
+# ...imports and setup above
+
+@app.get("/")
+def home(request: Request):
+    user = {
+        "name": "Philipe",
+        "role": "Math Professor",
+        "active": True
+    }
+    return templates.TemplateResponse(
+        request=request,
+        name="home.html",
+        context={"title": "Profile", "user": user}
+    )
+```
+
+In the template, you access dictionary keys with dot notation:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>{{ user.name }}</h1>
+    <p>Role: {{ user.role }}</p>
+</body>
+</html>
+```
+
+`{{ user.name }}` reaches into the `user` dictionary and gets the `name` key. This works the same whether `user` is a dictionary or a Python object with attributes.
+
+## Loops and Conditionals in Templates
+
+Templates can do more than insert values. You can loop over lists and make decisions based on conditions.
+
+To display a list of items, use `{% for %}`. Update your template:
+```html
+<h2>Skills</h2>
+<ul>
+{% for skill in skills %}
+    <li>{{ skill }}</li>
+{% endfor %}
+</ul>
+```
+
+The `{% %}` syntax is for logic (loops, conditionals), while `{{ }}` is for outputting values. Everything between `{% for %}` and `{% endfor %}` repeats for each item in the list.
+
+Pass the list from Python:
+```python
+context = {
+    "title": "Profile",
+    "user": user,
+    "skills": ["Python", "HTML", "CSS", "FastAPI"]
+}
+```
+
+The template produces:
+```html
+<h2>Skills</h2>
+<ul>
+    <li>Python</li>
+    <li>HTML</li>
+    <li>CSS</li>
+    <li>FastAPI</li>
+</ul>
+```
+
+You can also loop over lists of dictionaries, which is common when displaying data from a database:
+```html
+{% for project in projects %}
+    <div>
+        <h3>{{ project.name }}</h3>
+        <p>{{ project.description }}</p>
+    </div>
+{% endfor %}
+```
+
+Conditionals work similarly. To show content only when a condition is true, use `{% if %}`:
+```html
+{% if user.active %}
+    <span class="badge">Active</span>
+{% endif %}
+```
+
+You can add `{% else %}` for the alternative:
+```html
+{% if user.active %}
+    <span class="badge active">Active</span>
+{% else %}
+    <span class="badge inactive">Inactive</span>
+{% endif %}
+```
+
+And `{% elif %}` for multiple conditions:
+```html
+{% if user.role == "admin" %}
+    <span class="badge admin">Admin</span>
+{% elif user.role == "moderator" %}
+    <span class="badge mod">Moderator</span>
+{% else %}
+    <span class="badge">Member</span>
+{% endif %}
+```
+
+Jinja supports the comparison operators you'd expect: `==`, `!=`, `<`, `>`, `<=`, `>=`. You can combine conditions with `and`, `or`, and `not`.
+
+## Template Inheritance
+
+Most websites have consistent elements on every page: the same header, the same footer, the same navigation. Copying that HTML into every template would be tedious and error-prone. Template inheritance solves this.
+
+You create a base template that defines the common structure, then child templates that fill in the parts that change.
+
+Create `templates/base.html`:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}My Site{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>My Site</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 My Site</p>
+    </footer>
+</body>
+</html>
+```
+
+The `{% block %}` tags define holes that child templates can fill. The text inside (`My Site` in the title block) is the default if the child doesn't override it.
+
+Now create a child template. Update `templates/home.html`:
+```html
+{% extends "base.html" %}
+
+{% block title %}Home - My Site{% endblock %}
+
+{% block content %}
+<h2>Welcome!</h2>
+<p>This is the homepage.</p>
+{% endblock %}
+```
+
+`{% extends "base.html" %}` says this template builds on base.html. The `{% block %}` tags override the parent's blocks. Everything else comes from the parent.
+
+Here's how the pieces fit together:
+
+![How template inheritance works](../images/chapter5/figure-5-2-en.svg)
+
+Create another page to see the benefit. Add `templates/about.html`:
+```html
+{% extends "base.html" %}
+
+{% block title %}About - My Site{% endblock %}
+
+{% block content %}
+<h2>About Us</h2>
+<p>We make things.</p>
+{% endblock %}
+```
+
+And add the route in `main.py`:
+```python
+# main.py
+# ...existing code above
+
+@app.get("/about")
+def about(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="about.html",
+        context={}
+    )
+```
+
+Both pages share the same header, navigation, and footer. Change the nav in `base.html` and it changes everywhere. This is why real websites use template inheritance.
+
+## Hands-On: Converting the Profile Page
+
+Let's convert our profile page from Chapter 4 to use templates properly. First, set up the folder structure:
+```
+chapter5/
+├── .venv/
+├── main.py
+├── pyproject.toml
+├── static/
+│   └── profile.css
+└── templates/
+    ├── base.html
+    └── profile.html
+```
+
+Copy your `profile.css` from Chapter 4 into the `static` folder.
+
+Start with `templates/base.html`. This will be our foundation for all pages:
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Profile{% endblock %}</title>
+    <link rel="stylesheet" href="/static/profile.css">
+</head>
+<body>
+    <header>
+        <h1>{% block header_title %}{% endblock %}</h1>
+        <nav>
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2025 {% block footer_name %}{% endblock %}</p>
+    </footer>
+</body>
+</html>
+```
+
+Now create `templates/profile.html` that extends the base:
+```html
+{% extends "base.html" %}
+
+{% block title %}{{ profile.name }} - Profile{% endblock %}
+
+{% block header_title %}{{ profile.name }}{% endblock %}
+
+{% block content %}
+<section id="about">
+    <h2>About Me</h2>
+    {% for paragraph in profile.about %}
+    <p>{{ paragraph }}</p>
+    {% endfor %}
+</section>
+
+<section id="skills">
+    <h2>Skills</h2>
+    <ul>
+        {% for skill in profile.skills %}
+        <li>{{ skill }}</li>
+        {% endfor %}
+    </ul>
+</section>
+
+<section id="contact">
+    <h2>Contact</h2>
+    {% if profile.email %}
+    <p>Email: <a href="mailto:{{ profile.email }}">{{ profile.email }}</a></p>
+    {% else %}
+    <p>No contact information available.</p>
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block footer_name %}{{ profile.name }}{% endblock %}
+```
+
+Look at how much cleaner this is. The loops and conditionals are right there in the HTML, easy to read. No string concatenation, no f-strings, no escaping issues.
+
+Now update `main.py`:
+```python
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+
+app = FastAPI()
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+```
+
+Add the profile data:
+```python
+# main.py
+# ...setup above
+
+profile = {
+    "name": "Philipe Ackerman",
+    "about": [
+        "Hi! I'm a math professor, and a really good one at that.",
+        "When I'm not teaching, you can find me cheering for my soccer team, Botafogo.",
+    ],
+    "skills": ["Math", "Having Long Hair", "Video Recording"],
+    "email": "philipe@example.com",
+}
+```
+
+And the route:
+```python
+# main.py
+# ...profile data above
+
+@app.get("/")
+def home(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="profile.html",
+        context={"profile": profile}
+    )
+```
+
+Run the server and visit `http://localhost:8000`. You should see the same profile page as before:
+
+![The profile page using templates](../images/chapter5/figure-5-3-en.png)
+
+The page looks identical, but now the code is organized properly. The HTML is in HTML files. The Python is in Python files. Each does what it's good at.
+
+Try adding a second profile. Create a route that takes a username:
+```python
+# main.py
+# ...existing code above
+
+profiles = {
+    "philipe": {
+        "name": "Philipe Ackerman",
+        "about": [
+            "Hi! I'm a math professor, and a really good one at that.",
+            "When I'm not teaching, you can find me cheering for my soccer team, Botafogo.",
+        ],
+        "skills": ["Math", "Having Long Hair", "Video Recording"],
+        "email": "philipe@example.com",
+    },
+    "maria": {
+        "name": "Maria Santos",
+        "about": [
+            "Software developer by day, guitarist by night.",
+            "I believe code should be as elegant as music.",
+        ],
+        "skills": ["Python", "FastAPI", "Guitar", "Coffee Brewing"],
+        "email": "maria@example.com",
+    },
+}
+```
+
+Now add a route that uses the username to look up the profile:
+```python
+# main.py
+# ...profiles dict above
+
+@app.get("/profile/{username}")
+def show_profile(request: Request, username: str):
+    profile = profiles.get(username)
+    if not profile:
+        return templates.TemplateResponse(
+            request=request,
+            name="not_found.html",
+            context={"username": username},
+            status_code=404
+        )
+    return templates.TemplateResponse(
+        request=request,
+        name="profile.html",
+        context={"profile": profile}
+    )
+```
+
+Create `templates/not_found.html`:
+```html
+{% extends "base.html" %}
+
+{% block title %}Not Found{% endblock %}
+
+{% block header_title %}Not Found{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Profile Not Found</h2>
+    <p>No profile exists for "{{ username }}".</p>
+    <p><a href="/">Go back home</a></p>
+</section>
+{% endblock %}
+
+{% block footer_name %}My Site{% endblock %}
+```
+
+Now visit `http://localhost:8000/profile/philipe` and `http://localhost:8000/profile/maria`. Same template, different data, different pages. Visit `http://localhost:8000/profile/nobody` and you get a proper 404 page.
+
+This is the power of templates. One HTML file serves unlimited profiles. Add a hundred users to the database and the template handles them all.
+
+## Testing with Interactive Documentation
+
+Remember the `/docs` page from Chapter 4? Now that we have a more interesting endpoint, let's actually use it.
+
+Run your server and visit `http://localhost:8000/docs`. You'll see your endpoints listed. Click on the `/profile/{username}` endpoint to expand it. You'll see the parameter it expects: `username`, a required string. FastAPI figured this out from your code.
+
+Click "Try it out" to enable the input field:
+
+![The endpoint expanded with input field ready](../images/chapter5/figure-5-4-en.png)
+
+Type a username like `philipe` and click "Execute". The docs page makes a real request to your server and shows you the result:
+
+![The response after executing the request](../images/chapter5/figure-5-5-en.png)
+
+The response shows the actual URL it requested, the curl command to make the same request from a terminal, the status code (200 for success), and the response body containing the HTML your template generated.
+
+Try a username that doesn't exist, like `nobody`. You'll see a 404 response with your not_found.html template.
+
+This is useful for debugging. When something isn't working, you can test the endpoint directly without opening a browser tab, typing the URL, and refreshing. You see exactly what your server returns, including headers.
+
+The documentation is generated from your code. The endpoint names come from your function names, the parameter types come from your type hints. If you add docstrings to your functions, they appear in the docs too:
+```python
+@app.get("/profile/{username}")
+def show_profile(request: Request, username: str):
+    """
+    Display a user's profile page.
+
+    - **username**: The unique username to look up
+    """
+    profile = profiles.get(username)
+    # ...rest of the function
+```
+
+Refresh `/docs` and you'll see the description appear. This matters when you're building APIs that other developers will use. They can read your documentation without digging through your code.
+
+## Chapter Summary
+
+- Templates separate HTML from Python code
+- Jinja uses `{{ }}` for outputting values and `{% %}` for logic
+- Pass data to templates through the context dictionary
+- `{% for %}` loops over lists; `{% if %}` handles conditionals
+- Template inheritance (`{% extends %}` and `{% block %}`) eliminates repetition
+- One template can serve unlimited variations of a page
+
+In the next chapter, we'll handle forms: how to receive data from users and do something with it.
+
+## Exercises
+
+1. Add a "projects" section to the profile page. Store a list of project dictionaries (each with name and description) in the profile data and display them using a loop.
+
+2. Create an "index" page that lists all profiles with links to each one. You'll need a new template and a new route.
+
+3. Add a conditional to the profile template that shows "No skills listed" if the skills list is empty. Test it by creating a profile with an empty skills list.
+
+4. Create a second base template called `base_minimal.html` that has no header or footer. Make the 404 page extend this instead. This shows you can have multiple base templates for different page types.
+
+5. Add a "theme" field to profiles (either "light" or "dark"). Use a conditional in the base template to add a CSS class to the body tag based on this field. You'll need to pass the profile to the base template somehow (hint: the profile is already in context).
+
+6. Jinja has filters that transform values. Look up the `|title` and `|length` filters in the Jinja documentation. Use `|title` to capitalize names and `|length` to show how many skills someone has.

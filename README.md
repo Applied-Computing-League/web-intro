@@ -2,6 +2,12 @@
 
 From Server-Rendered Pages to React with Python and FastAPI.
 
+> **[Read the English version (PDF)](docs/en/Practical-Web-Development-(en).pdf)**
+
+A book that teaches web development starting from how HTTP works, through HTML, CSS, and server-side Python with FastAPI, all the way to HTMX, React, databases, authentication, and deployment. Opinionated, hands-on, and meant to be read in order. Each chapter builds on the previous one.
+
+Assumes Python knowledge. No prior web experience needed.
+
 ## Table of Contents
 
 | Chapter | Topic | Code |
@@ -43,8 +49,7 @@ More chapters will be added.
 ### HTML (default)
 
 ```bash
-cd en
-uv run quarto render
+uv run quarto render en/
 ```
 
 The output will be in `docs/en/`. Open `docs/en/index.html` in your browser to view.
@@ -52,8 +57,7 @@ The output will be in `docs/en/`. Open `docs/en/index.html` in your browser to v
 ### PDF
 
 ```bash
-cd en
-uv run quarto render --to pdf
+uv run quarto render en/ --to pdf
 ```
 
 > Note: PDF rendering requires a LaTeX distribution (e.g., [TinyTeX](https://yihui.org/tinytex/), [TeX Live](https://www.tug.org/texlive/), or [MiKTeX](https://miktex.org/)).
@@ -61,8 +65,7 @@ uv run quarto render --to pdf
 ### Preview with live reload
 
 ```bash
-cd en
-uv run quarto preview
+uv run quarto preview en/
 ```
 
 This starts a local server and opens the book in your browser. Changes to `.qmd` files will automatically trigger a rebuild.
