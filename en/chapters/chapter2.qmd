@@ -36,7 +36,7 @@ Elements can have attributes, which provide extra information:
 
 The `href` attribute tells the link where to go. The `src` attribute tells the image which file to load. The `alt` attribute provides text for screen readers and for when the image fails to load. Attributes always go in the opening tag, and they follow the pattern `name="value"`.
 
-Let's take a look at a complete HTML document and the relevant elements next.
+So far these are fragments. A real HTML page needs a bit more structure around them.
 
 ## A Complete HTML Document
 
@@ -157,9 +157,11 @@ And ordered lists (numbered):
 
 ## Semantic Markup
 
-Early HTML was full of tags like `<font>`, `<center>`, and `<b>`. These described how things should look, not what they meant. Modern HTML separates structure (HTML) from presentation (CSS).
+You could build an entire website using only `<div>` and `<span>` tags. Wrap everything in divs, give them class names, and style them with CSS. It would look identical in a browser. A lot of early websites worked this way.
 
-Semantic tags describe the meaning of content:
+The problem is that a `<div class="header">` means nothing to anyone except you. Your browser doesn't know it's a header. A screen reader (software that reads pages aloud for visually impaired users) doesn't know it's a header. Google's search crawler doesn't know it's a header. They all see a generic box.
+
+Semantic tags fix this by describing what content *means*, not just how it looks:
 
 ```html
 <header>
@@ -184,7 +186,7 @@ Semantic tags describe the meaning of content:
 
 `<header>` is for introductory content, usually at the top. `<nav>` is for navigation links. `<main>` is for the primary content of the page. `<article>` is for self-contained content that could stand alone. `<footer>` is for content at the bottom (copyright, contact info).
 
-You could build the same layout using only `<div>` tags:
+Compare that to the div-only version:
 
 ```html
 <div class="header">
@@ -200,7 +202,9 @@ In the browser, it looks like this:
 
 ![Semantic HTML elements rendered in the browser](../images/chapter2/figure-2-2-en.png)
 
-Both approaches render the same way. But semantic tags help screen readers understand the page structure, help search engines identify important content (better for SEO), and make your code easier to read.
+Both render the same way. The difference is in what happens behind the visible page. A screen reader can skip straight to `<main>` so a blind user doesn't have to listen to the navigation on every page. Google can identify the `<article>` as the important content and use it in search results. Your future self (or a teammate) can read the HTML and immediately understand the page structure without deciphering class names.
+
+This isn't theoretical. Search engine rankings are affected by how well your HTML communicates structure. Accessibility lawsuits have been filed against companies whose websites are unusable with screen readers. Using semantic tags costs you nothing and helps on both fronts.
 
 A few more semantic tags worth knowing:
 
@@ -215,7 +219,7 @@ A few more semantic tags worth knowing:
 <em>       <!-- Emphasized text (renders italic by default) -->
 ```
 
-Use `<strong>` when text is important, not just when you want bold. Use `<em>` when text is emphasized, not just when you want italics. Screen readers and search engines care about this distinction.
+Use `<strong>` when text is important, not just when you want bold. Use `<em>` when text is emphasized, not just when you want italics. The visual result is the same, but screen readers change their tone of voice for `<strong>` and `<em>`, which conveys meaning that bold and italic styling alone can't.
 
 ## Links and Navigation
 
@@ -484,7 +488,7 @@ Click the navigation links and watch the page scroll. With the template above (a
 
 ![The profile page template rendered in the browser](../images/chapter2/figure-2-4-en.png)
 
-Ugly, I know. Bug, again, Structure first, style later.
+Ugly, I know. But, again, structure first, style later.
 
 ## Chapter Summary
 
@@ -504,10 +508,10 @@ The page you built works, but it's visually plain. In the next chapter, we'll ad
 
 2. Create a second HTML file called `projects.html` with a list of projects (real or imaginary). Add a link to it from your profile page's navigation, and add a link back to the profile page.
 
-3. Expand your contact form to include a dropdown for "Reason for contact" with options like "General inquiry," "Job opportunity," and "Other."
+3. Expand your contact form: add a dropdown for "Reason for contact" with a few options, and add a checkbox for "Subscribe to newsletter." Then open the Network tab, fill out the form, and click submit. Look at the request that gets sent. Find your form data in the request. What happens to the checkbox value when it's checked vs unchecked? What about the dropdown?
 
 4. Using only HTML (no CSS), try to create a simple table showing your weekly schedule. Look up the `<table>`, `<tr>`, `<th>`, and `<td>` tags.
 
-5. View the source of three different websites. Look at how they structure their HTML. Can you find the `<header>`, `<main>`, and `<footer>` sections? How deeply nested are their elements?
+5. View the source of example.com and one simple, well-structured site (a blog or documentation site works well). Find the semantic elements: <header>, <main>, <footer>, <nav>. Then view the source of a complex site like a social media homepage. What's different? Why do you think large applications end up with so many nested <div> elements?
 
 6. Use the browser's developer tools (right-click, "Inspect") on your profile page. Try editing the HTML directly in the inspector. What happens when you change an element's text or delete a tag? (Don't worry, refreshing the page restores everything. You're changing stuff at the client.)

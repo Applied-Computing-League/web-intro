@@ -8,9 +8,19 @@ Most web development resources fall into two camps: tutorials that get you copyi
 
 We start with how the web actually works (HTTP, requests, responses) before writing any server code. This isn't filler. When something breaks later, you'll know where to look because you understand the underlying mechanics.
 
-The book is opinionated. We use Python and FastAPI on the server. For interactivity, we start with HTMX (server-rendered HTML, minimal JavaScript) before moving to React (client-rendered, more JavaScript). You'll understand both approaches and when each makes sense. We're not trying to cover every framework or teach you the "best" way. We're teaching you one coherent way that works, so you have solid ground to stand on when you explore other options later.
+The book is opinionated. We use Python and FastAPI on the server. For interactivity, we start with HTMX (server-rendered HTML, minimal JavaScript) before moving to React (client-rendered, more JavaScript). We're not trying to cover every framework or teach you the "best" way. We're teaching you one coherent way that works, so you have solid ground to stand on when you explore other options later.
 
-By the end, you'll have built and deployed a real web application. Not a toy project that only runs on your laptop, but something on the internet that other people can use.
+## What You'll Build {.unnumbered}
+
+The book follows a single thread: by the end, you'll have built and deployed a real web application. Not a toy project that only runs on your laptop, but something on the internet that other people can use. Here's the path we take to get there.
+
+We start with HTML and CSS: the languages that define what pages contain and how they look. These are what your server sends to browsers, so you need to understand them before writing any server code.
+
+Then we build servers with Python and FastAPI. You'll write code that receives HTTP requests and sends back responses. First simple HTML, then templates to generate complex pages from data.
+
+We'll handle forms and user input: how data flows from browser to server. Then for interactivity, we'll look at two approaches. HTMX lets you update parts of a page without writing JavaScript. React moves more work to the browser and turns your server into an API that returns data instead of HTML. You'll understand both and know when to use which.
+
+We'll add databases so applications can remember things, authentication so users can have accounts, and finally deploy to a real server so anyone can use what you've built.
 
 ## How to Use This Book {.unnumbered}
 

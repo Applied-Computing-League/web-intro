@@ -16,7 +16,7 @@ When you run a server on your computer, it listens on a port (usually 8000 for d
 
 The code you write defines what happens for each path. Visit `/`? Run this function. Visit `/about`? Run that function. Visit `/users/42`? Run another function and pass it the number 42. This mapping from paths to functions is called **routing**.
 
-FastAPI handles the HTTP parsing and response formatting. You just write Python functions that return data, and FastAPI turns that data into proper HTTP responses. But before we can write any code, we need to set up our project.
+FastAPI handles the HTTP parsing and response formatting. You just write Python functions that return data, and FastAPI turns that data into proper HTTP responses.
 
 ## Setting Up Your Project
 
@@ -195,7 +195,8 @@ def get_user_post(user_id: int, post_id: int):
     return {"user_id": user_id, "post_id": post_id}
 ```
 
-This pattern is common for nested resources: a post belongs to a user, so the URL reflects that relationship. The order of parameters in your function doesn't matter, FastAPI matches them by name. But path parameters aren't the only way to pass data to your server. Sometimes you want optional filters or settings that don't belong in the URL path itself.
+This pattern is common for nested resources: a post belongs to a user, so the URL reflects that relationship. The order of parameters in your function doesn't matter, FastAPI matches them by name. Path parameters work when the value identifies a specific resource (/users/42).
+But what about optional filters or settings, like limiting search results or filtering by category?
 
 ## Query Parameters
 
@@ -244,31 +245,29 @@ In web development, "API" usually means a server that returns structured data (o
 
 FastAPI is designed for building APIs (it's in the name), but it can also return HTML. We'll do both in this book.
 
-So far, all our endpoints return dictionaries, which FastAPI converts to JSON:
-
-```json
-{"user_id": 1, "name": "User 1"}
-```
-
-The `Content-Type` header is set to `application/json`. That's an API response. But for a website that humans visit directly, we want to return HTML instead.
-
 ## Returning HTML
 
-For a website that humans visit (not just an API for code to consume), we want to return HTML that browsers can render. First, let's delete everything we had in our `main.py`, then we need to import `HTMLResponse`:
+So far, all our endpoints return dictionaries, and FastAPI converts them to JSON. That's useful when your server is talking to other code (a mobile app, a JavaScript frontend, another server). But when a human visits your site in a browser, they don't want to see raw JSON. They want a rendered page.
+
+The good news: your server can do both. Some endpoints return JSON for code to consume, others return HTML for humans to read. Many real applications do exactly this. The JSON endpoints are your API; the HTML endpoints are your website. Same server, different responses based on what's being asked for.
+
+To return HTML, import `HTMLResponse`:
 
 ```python
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+
+app = FastAPI()
 ```
 
-Then we can return HTML strings from our endpoints:
+Then use it on an endpoint:
 
 ```python
 # main.py
 # ...existing code above
 
-@app.get("/", response_class=HTMLResponse)
-def home():
+@app.get("/page", response_class=HTMLResponse)
+def page():
     return """
     <!DOCTYPE html>
     <html>
@@ -283,13 +282,17 @@ def home():
     """
 ```
 
-The `response_class=HTMLResponse` tells FastAPI to set the `Content-Type` header to `text/html` instead of `application/json`. Now the browser renders the HTML instead of showing raw text.
+The `response_class=HTMLResponse` tells FastAPI to set the `Content-Type` header to `text/html` instead of `application/json`. The browser sees HTML and renders it as a page instead of showing raw text.
 
-Writing HTML inside Python strings gets messy fast. In the next chapter, we'll use templates to keep HTML in separate files. But this shows the basic idea: your function returns something, FastAPI sends it to the browser with the right headers.
+You can have JSON and HTML endpoints in the same application. Your `/users/{user_id}` endpoint from earlier still returns JSON. This new `/page` endpoint returns HTML. The server doesn't care; it sends whatever your function returns with the right headers.
+
+But writing HTML inside Python strings gets messy fast. Look at that function: it's a Python function that's mostly HTML. Imagine adding a navigation bar, a form, conditional content based on user data. The string would grow to hundreds of lines, your editor couldn't help with the HTML (no syntax highlighting, no autocomplete inside strings), and debugging a missing closing tag would be painful.
+
+We'll solve this properly in the next chapter with templates. For now, let's use this approach to serve something real and see the payoff of generating HTML dynamically.
 
 ## Hands-On: Serving the Profile Page
 
-Remember the profile page from Chapters 2 and 3? We opened it directly in the browser as a file. Now let's serve it from a real server.
+Remember the profile page from Chapters 2 and 3? We opened it directly in the browser as a file. Now let's serve it from a real server. We'll start a fresh `main.py` for this, since we're building a different application than the test endpoints above.
 
 First, create a `static` folder for our CSS:
 
@@ -304,7 +307,7 @@ chapter4/
 
 Copy your `profile.css` from Chapter 3 into the `static` folder.
 
-Now let's build `main.py` step by step. Start fresh with the imports:
+Now let's build `main.py`. Start fresh with the imports:
 ```python
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
@@ -314,6 +317,7 @@ app = FastAPI()
 ```
 
 Next, tell FastAPI where to find static files:
+
 ```python
 # main.py
 # ...imports and app above
@@ -338,7 +342,7 @@ profile = {
 }
 ```
 
-This dictionary is our data. Right now it's hardcoded, but it could come from a database, a file, or user input.
+This dictionary is our data. Philipe is a math professor who teaches algebra and geometry on YouTube, pointer stick in hand, long hair and all. Right now his profile is hardcoded, but it could come from a database, a file, or user input. The point is that the HTML is generated from data, and when the data changes, the page changes with it.
 
 Finally, the endpoint that generates the HTML. First, we build the dynamic parts:
 ```python

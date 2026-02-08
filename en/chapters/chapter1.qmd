@@ -22,7 +22,7 @@ But how does your browser know where to send the request? When you type `www.exa
 
 The translation happens through DNS (Domain Name System), which works like a phone book for the internet. Your browser asks a DNS server "what's the IP address for www.example.com?" and gets back the number it needs.
 
-You don't need to understand DNS deeply to build websites. But knowing it exists explains why sometimes a "website is down" when really the site is fine—nobody can find its address. Now let's understand better how clients and servers communicate.
+You don't need to understand DNS deeply to build websites. But knowing it exists explains why sometimes a "website is down" when really the site is fine: nobody can find its address. Once the browser knows where the server is, though, it needs a way to talk to it.
 
 ## HTTP: Requests and Responses
 
@@ -82,7 +82,7 @@ When you build a web application, part of what you're writing is the server side
 
 ![What Happens When You Visit a Page](../images/chapter1/figure-1-2-en.svg)
 
-Next, let's analyze the actual anatomy of URLs.
+Every request targets a specific URL. We've been looking at simple ones like /about, but URLs can carry a lot more information.
 
 ## URLs
 
@@ -126,7 +126,7 @@ This is server-side programming: code that runs on the server, handles requests,
 
 Static sites work when content is the same for everyone, updates are infrequent, and you want maximum speed at minimum cost. Dynamic sites are necessary when content depends on who's viewing it, users can create or modify data, or you need real-time information.
 
-Most applications are dynamic. That's what we're building. Next we'll see it in practice.
+Most applications are dynamic. That's what we're building.
 
 ## Looking at Network Traffic
 
@@ -143,25 +143,9 @@ You'll see the HTML document load first, then requests for CSS, JavaScript, imag
 
 This isn't just educational. When something isn't working, the Network tab tells you what's actually being sent and received. You'll use it constantly to debug.
 
-## What We're Building
-
-Now that you understand the mechanics, here's where we're headed.
-
-We start with HTML and CSS, the languages that define what pages contain and how they look. These are what your server sends to browsers.
-
-Then we build servers with Python and FastAPI. You'll write code that receives HTTP requests and sends back responses. First simple HTML, then templates to generate complex pages from data.
-
-We'll handle forms and user input: how data flows from browser to server.
-
-For interactivity, we'll look at two approaches. HTMX lets you update parts of a page without writing JavaScript—the server still generates HTML, but the browser swaps it in without reloading. Then React, where the browser takes over more work and your server becomes an API that returns data instead of HTML. You'll understand both and know when to use which.
-
-We'll add databases so applications can remember things, and authentication so users can have accounts.
-
-Finally, we'll deploy to a real server so anyone can use what you've built.
-
 ## Hands-On: Exploring HTTP with Browser Dev Tools
 
-Let's put this into practice.
+Open your browser and follow along.
 
 **Exercise 1: Inspect a Page Load**
 
@@ -194,10 +178,10 @@ In the next chapter, we start working with HTML: the format most HTTP responses 
 
 1. Using developer tools, find three different HTTP status codes on real websites. Which sites, which codes, what caused them?
 
-2. Look at the User-Agent header your browser sends. What does each part mean?
+2. Open two different browsers (or a browser and a private/incognito window) and visit the same page. Compare the request headers in the Network tab. What's different between them? What's the same? Pay attention to Accept, Accept-Language, and User-Agent.
 
 3. Pick a website you use often. How many HTTP requests does the homepage make? How many different domains do they go to?
 
 4. Find a site with search. Do a search, look at the URL, find the query parameter with your search term. Modify the URL to do a different search.
 
-5. Compare response headers from `example.com` (static) versus a news site (dynamic). What differences do you notice? Look for `Cache-Control`, `Set-Cookie`, `Server`.
+5. Visit example.com and a site you're logged into (email, social media, anything). Compare the response headers. The static site's headers are simple. The dynamic site's are more complex. What extra headers does the dynamic site send, and why might it need them? (Hint: think about what a site that knows who you are needs to do differently.)

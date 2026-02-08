@@ -4,7 +4,7 @@ The profile page we built in the last chapter works, but it looks like it's from
 
 CSS stands for Cascading Style Sheets. It's the language that controls colors, fonts, spacing, and layout. When you visit a website that looks good (or bad), that's CSS at work. HTML says "this is a heading." CSS says "this heading should be dark blue, 32 pixels tall, and have some space below it."
 
-Like HTML, CSS isn't a programming language. You write rules that describe how elements should look, and the browser applies them. Now let's see how to actually connect the two and apply CSS styles to our HTML structured text.
+Like HTML, CSS isn't a programming language. You write rules that describe how elements should look, and the browser applies them. There are a few ways to attach those rules to your HTML.
 
 ## How CSS Connects to HTML
 
@@ -169,112 +169,100 @@ There are more selectors (attribute selectors, pseudo-classes, pseudo-elements),
 
 ## Common Properties
 
-CSS has hundreds of properties, but we'll focus on the ones you'll see constantly.
+CSS has hundreds of properties. You'll use maybe thirty regularly, and look up the rest when you need them. Rather than listing them all, let's style a real element and introduce properties as we go.
 
-**Colors**:
+Start with a page that has some text and a card:
 
-```css
-h1 {
-    color: navy;                 /* text color */
-    background-color: #f0f0f0;   /* background */
-}
+```html
+<body>
+    <h1>My Website</h1>
+    <p>Welcome to the site.</p>
+
+    <div class="card">
+        <h2>Latest Post</h2>
+        <p>This is a preview of the post content...</p>
+        <a href="/post/1">Read more</a>
+    </div>
+</body>
 ```
 
-Colors can be names (`red`, `navy`, `white`), hex codes (`#ff0000`, `#f0f0f0`), or RGB values (`rgb(255, 0, 0)`). Hex codes are most common.
+Without any CSS, this is black text on a white background in the browser's default font (usually Times New Roman). Everything is cramped against the left edge. Let's fix it piece by piece.
 
-**Typography**:
+First, the typography. Set a font on the `body` and everything inside inherits it:
 
 ```css
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 16px;
     line-height: 1.5;
+    color: #333;
 }
+```
 
+`font-family` takes a list of fonts. The browser uses the first one it has, so you provide fallbacks. Always end with a generic family (`serif`, `sans-serif`, `monospace`) as the last resort. `line-height` controls spacing between lines. A unitless number like `1.5` means 1.5 times the font size. This makes text much easier to read than the default (which is too tight).
+
+The `color` property sets text color. `#333` is a dark gray hex code, softer than pure black. You can also use named colors (`red`, `navy`) or RGB values (`rgb(255, 0, 0)`), but hex codes are what you'll see most in real projects.
+
+Now let's make the heading stand out:
+
+```css
 h1 {
     font-size: 32px;
-    font-weight: bold;
-}
-
-.subtle {
-    font-style: italic;
-    color: #666;
+    color: navy;
 }
 ```
 
-`font-family` takes a list of fonts. The browser uses the first one it has. Always end with a generic family (`serif`, `sans-serif`, `monospace`).
-
-`line-height` controls spacing between lines. A unitless number like `1.5` means 1.5 times the font size.
-
-**Spacing**:
-
-```css
-p {
-    margin: 20px;    /* space outside the element */
-    padding: 10px;   /* space inside the element */
-}
-```
-
-The difference between margin and padding matters once you understand the box model (next section).
-
-You can set each side separately:
-
-```css
-p {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-/* shorthand: top right bottom left */
-p {
-    margin: 20px 0 20px 0;
-}
-
-/* shorthand: vertical horizontal */
-p {
-    margin: 20px 0;
-}
-```
-
-**Borders**:
+And style the card so it looks like an actual card:
 
 ```css
 .card {
-    border: 1px solid #ccc;
-    border-radius: 8px;         /* rounded corners */
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 400px;
 }
 ```
 
-**Size**:
+`background-color` does what you'd expect. `border` is shorthand for width, style, and color in one line. `border-radius` rounds the corners (higher values mean rounder). `padding` adds space between the card's edge and its content. `max-width` prevents the card from stretching across the entire page.
+
+The link inside the card is the default blue with an underline. Let's change that:
 
 ```css
-img {
-    width: 200px;
-    height: auto;               /* maintain aspect ratio */
+.card a {
+    color: #2c3e50;
+    text-decoration: none;
 }
 
-.container {
-    max-width: 800px;           /* won't grow larger than this */
+.card a:hover {
+    text-decoration: underline;
 }
 ```
 
-**Text**:
+`text-decoration: none` removes the underline. The `:hover` pseudo-class applies styles only when the mouse is over the element, so the underline comes back as a visual hint that it's clickable.
+
+One property that comes up constantly is `text-align`:
 
 ```css
 h1 {
     text-align: center;
 }
+```
 
-a {
-    text-decoration: none;      /* removes underline */
-}
+This centers the text within its container. It works on any block element. You'll use it for headings, hero sections, and footers.
 
-.uppercase {
-    text-transform: uppercase;
+Finally, spacing. You control the space between elements with `margin` (outside the element) and `padding` (inside). The difference matters once you understand the box model (next section), but the shorthand is worth knowing now:
+
+```css
+.card {
+    margin: 20px 0;     /* 20px top and bottom, 0 left and right */
+    padding: 20px;       /* 20px on all four sides */
 }
 ```
+
+You can set each side individually (`margin-top`, `padding-left`), but the shorthand covers most cases. Two values means "vertical horizontal." Four values means "top right bottom left" (clockwise from the top).
+
+That's enough to style most of what you'll build in the next few chapters. When you need a property we haven't covered, look it up. The MDN Web Docs (developer.mozilla.org) are the best reference.
 
 ## The Box Model
 
@@ -283,11 +271,13 @@ Every HTML element is a box. Each box has four layers, from inside to outside:
 1. **Content**: The actual text, image, or other content
 2. **Padding**: Space between the content and the border
 3. **Border**: A line around the padding
-4. **Margin**: Space between this element and others
+4. **Margin**: Space between this element and neighboring elements
 
 ![The CSS Box Model](../images/chapter3/figure-3-1-en.svg)
 
-Here's an example:
+The first three (content, padding, border) make up the element itself: its visible size on screen. Margin is different. It's not part of the element; it's the gap between this element and whatever is next to it.
+
+This distinction matters when you set a width:
 
 ```css
 .card {
@@ -298,14 +288,16 @@ Here's an example:
 }
 ```
 
-How wide is this element on the page? It's not 300px. By default, `width` sets only the content width. The total width is composed of these:
+By default, `width` sets only the content width. The padding and border get added on top of that. So the element's visible size on screen is:
 
 - Content: 300px
 - Padding: 20px left + 20px right = 40px
 - Border: 2px left + 2px right = 4px
-- Total: 344px (margin doesn't count toward the element's size, but does affect spacing)
+- Visible width: 344px
 
-This math is annoying, but there's a fix:
+The margin adds another 10px on each side, so the element occupies 364px of horizontal space on the page. But the element itself (the box you see) is 344px wide.
+
+This math is annoying. You set `width: 300px` and the thing ends up 344px wide. There's a fix:
 
 ```css
 * {
@@ -313,19 +305,19 @@ This math is annoying, but there's a fix:
 }
 ```
 
-With `box-sizing: border-box`, `width` includes padding and border. Now if you set `width: 300px`, the element is actually 300px wide, and the browser subtracts space for padding and border from the content area.
+With `box-sizing: border-box`, `width` includes padding and border. Set `width: 300px` and the element is 300px wide, period. The browser subtracts space for padding and border from the content area automatically.
 
 Most developers add this rule to every project. Put it at the top of your CSS file.
 
-**Margins collapse**. If two elements are stacked vertically and one has `margin-bottom: 20px` and the next has `margin-top: 30px`, the space between them is 30px (not 50px). The larger margin wins. This is intentional, but it can be confusing (CSS is often a pain, get used to it).
+One more thing about margin: **margins collapse**. If two elements are stacked vertically and one has `margin-bottom: 20px` and the next has `margin-top: 30px`, the space between them is 30px, not 50px. The larger margin wins. This is intentional behavior, not a bug, but it surprises people. Padding never collapses.
 
 ## Layout with Flexbox
 
-Getting elements to sit next to each other used to be more painful. CSS had `float`, which was designed for wrapping text around images and was hacked to do layout. It was confusing and error-prone.
+By default, HTML elements stack vertically. Headings, paragraphs, divs: they all sit on top of each other, taking up the full width. That's fine for a document, but most websites need elements side by side: navigation links in a row, cards in a grid, a sidebar next to the main content.
 
-Flexbox (Flexible Box Layout) was designed specifically for layout. It makes things like centering, spacing, and alignment easy.
+CSS had `float` for this, which was designed for wrapping text around images and got hacked into a layout tool. It was confusing and fragile. Flexbox (Flexible Box Layout) was built specifically for the job.
 
-To use flexbox, set `display: flex` on a container:
+To use flexbox, you set `display: flex` on a container. The container's children then become "flex items" that you can arrange:
 
 ```html
 <nav class="main-nav">
@@ -335,51 +327,13 @@ To use flexbox, set `display: flex` on a container:
 </nav>
 ```
 
-The css:
-
 ```css
 .main-nav {
     display: flex;
 }
 ```
 
-The links now sit side by side instead of stacking vertically. The container is a "flex container" and its children are "flex items."
-
-**justify-content** controls horizontal alignment:
-
-```css
-.main-nav {
-    display: flex;
-    justify-content: space-between;
-}
-```
-
-You have some options for it:
-
-- `flex-start`: items at the start (default)
-- `flex-end`: items at the end
-- `center`: items in the center
-- `space-between`: items spread out, first at start, last at end
-- `space-around`: items spread out with space around each
-- `space-evenly`: items spread out with equal space between
-
-**align-items** controls vertical alignment:
-
-```css
-.main-nav {
-    display: flex;
-    align-items: center;
-}
-```
-
-There are also a few options:
-
-- `stretch`: items stretch to fill container height (default)
-- `flex-start`: items at the top
-- `flex-end`: items at the bottom
-- `center`: items vertically centered
-
-**gap** adds space between items:
+That single line puts the links side by side instead of stacked. But they're crammed together with no space between them. Add `gap` to fix that:
 
 ```css
 .main-nav {
@@ -388,27 +342,31 @@ There are also a few options:
 }
 ```
 
-This is cleaner than adding margin to each item.
+Now there's 20 pixels between each link. `gap` is cleaner than adding margin to each item individually because you don't have to worry about extra space on the first or last item.
 
-**flex-direction** controls which way items flow:
+The links are bunched up on the left side of the page. What if you want them spread across the full width? That's what `justify-content` controls:
 
 ```css
-.sidebar {
+.main-nav {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
 }
 ```
 
-And the options:
+`space-between` pushes the first item to the left edge, the last item to the right edge, and distributes the rest evenly in between. This is the most common choice for navigation bars. If you want everything centered instead, use `justify-content: center`. If you want equal space around every item (including the edges), use `space-evenly`. You don't need to memorize all the options. `space-between` and `center` handle most cases.
 
-- `row`: left to right (default)
-- `column`: top to bottom
-- `row-reverse`: right to left
-- `column-reverse`: bottom to top
+Vertical alignment works similarly. If items in a row have different heights (say, an icon next to text), they might not line up the way you want. `align-items` fixes that:
 
-When you change direction, `justify-content` and `align-items` swap roles. In a column layout, `justify-content` controls vertical spacing and `align-items` controls horizontal alignment.
+```css
+.main-nav {
+    display: flex;
+    align-items: center;
+}
+```
 
-**Centering with flexbox** is finally easy:
+This vertically centers all items within the container. Without it, items stretch to fill the container's height (the default behavior), which is sometimes what you want and sometimes not.
+
+Centering something both horizontally and vertically on a page used to be surprisingly hard. With flexbox it's three lines:
 
 ```css
 .centered-container {
@@ -419,9 +377,21 @@ When you change direction, `justify-content` and `align-items` swap roles. In a 
 }
 ```
 
-This centers the content both horizontally and vertically. Before flexbox, this was a lot harder to do.
+`justify-content` handles the horizontal axis, `align-items` handles the vertical axis. Done.
 
-Here's a common page layout:
+By default, flex items flow left to right in a row. Sometimes you want a vertical layout (a sidebar with stacked links, for example). `flex-direction: column` switches the axis:
+
+```css
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+```
+
+One thing to know: when you change direction to `column`, the roles of `justify-content` and `align-items` swap. `justify-content` now controls the vertical axis and `align-items` controls the horizontal one. This makes sense if you think of `justify-content` as "along the direction items flow" and `align-items` as "across it," but it trips people up at first.
+
+Here's a common full-page layout that shows flexbox doing real work:
 
 ```css
 .page {
@@ -448,7 +418,7 @@ Here's a common page layout:
 }
 ```
 
-The `flex: 1` on `main` tells it to grow and fill whatever space is left after header and footer. This keeps the footer at the bottom even when there's not much content.
+The page is a vertical flex container. Header and footer take the space they need. The `flex: 1` on `main` tells it to grow and fill whatever space is left. This keeps the footer at the bottom of the viewport even when there's not much content (a classic problem that was annoying to solve before flexbox).
 
 ## Hands-On: Styling the Profile Page
 
@@ -565,14 +535,14 @@ We now have a styled page, but it's still static. In the next chapter, we'll sta
 
 ## Exercises
 
-1. Change the color scheme of your profile page. Pick a different primary color and update the header, footer, links, and buttons to match.
+1. Your profile page uses the color #2c3e50 in multiple places (header, footer, headings). What happens if you want to change it? Count how many places you'd need to update. Then look up CSS custom properties (variables) and refactor your CSS so the color is defined once and referenced everywhere. Change it to a new color by editing a single line.
 
 2. Add a hover effect to the skill tags. Maybe they change color, grow slightly, or get a shadow. Look up `transform: scale()` and `box-shadow`.
 
-3. Make the navigation links look like buttons instead of plain text links. Add background colors, padding, and rounded corners.
+3. Make the navigation links look like buttons (background color, padding, rounded corners). Then add two states: a hover effect that changes the background, and a style that visually marks the "current" page. You'll need to add a class to one of the nav links in your HTML and write a CSS rule for it.
 
 4. Add a profile image (real or placeholder) to the header. Center it above your name. Make it circular using `border-radius: 50%`.
 
-5. Create a "projects" section with three project cards side by side. Each card should have a title, description, and a "View Project" link. Use flexbox to arrange them in a row, and make them wrap on smaller screens.
+5. Create a "projects" section with three project cards side by side using flexbox. Each card should have a title, description, and a "View Project" link. Make the cards equal width (look up flex: 1). Then resize your browser window — what happens when the cards get too narrow? Look up flex-wrap and set a min-width on each card so they wrap to a new row on smaller screens.
 
 6. Using developer tools, inspect your styled page. Find an element and try changing its CSS values in the inspector. Watch how the page updates in real time. This is useful for experimenting before changing your actual CSS file.

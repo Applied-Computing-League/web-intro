@@ -273,6 +273,7 @@ Create another page to see the benefit. Add `templates/about.html`:
 ```
 
 And add the route in `main.py`:
+
 ```python
 # main.py
 # ...existing code above
@@ -515,6 +516,8 @@ This is useful for debugging. When something isn't working, you can test the end
 
 The documentation is generated from your code. The endpoint names come from your function names, the parameter types come from your type hints. If you add docstrings to your functions, they appear in the docs too:
 ```python
+# main.py — update the existing show_profile function
+
 @app.get("/profile/{username}")
 def show_profile(request: Request, username: str):
     """
