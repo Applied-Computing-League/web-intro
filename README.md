@@ -1,6 +1,17 @@
 # Practical Web Development
 
-A book on web development, from server-rendered pages to React with Python and FastAPI.
+From Server-Rendered Pages to React with Python and FastAPI.
+
+## Table of Contents
+
+| Chapter | Topic | Code |
+|---------|-------|------|
+| 1 | How the Web Works | — |
+| 2 | HTML | [chapter2](chapters/code/chapter2) |
+| 3 | CSS Basics | [chapter3](chapters/code/chapter3) |
+| 4 | Servers with FastAPI | [chapter4](chapters/code/chapter4) |
+
+More chapters will be added.
 
 ## Prerequisites
 
@@ -12,7 +23,7 @@ A book on web development, from server-rendered pages to React with Python and F
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/igorbenav/web-intro.git
+   git clone https://github.com/Applied-Computing-League/web-intro.git
    cd web-intro
    ```
 
@@ -59,13 +70,22 @@ uv run quarto render chapters/chapter1.qmd
 
 ```
 web-intro/
-├── _quarto.yml      # Quarto configuration
-├── index.qmd        # Book preface
-├── chapters/        # Book chapters
-├── docs/            # Rendered output (HTML)
-├── references.bib   # Bibliography
-├── references.qmd   # References page
-└── pyproject.toml   # Python dependencies
+├── _quarto.yml          # Quarto configuration
+├── index.qmd            # Book preface
+├── chapters/
+│   ├── chapter1.qmd     # How the Web Works
+│   ├── chapter2.qmd     # HTML
+│   ├── chapter3.qmd     # CSS Basics
+│   ├── chapter4.qmd     # Servers with FastAPI
+│   ├── code/            # Completed code for each chapter
+│   │   ├── chapter2/
+│   │   ├── chapter3/
+│   │   └── chapter4/
+│   └── images/          # Chapter figures
+├── docs/                # Rendered output (HTML)
+├── references.bib       # Bibliography
+├── references.qmd       # References page
+└── pyproject.toml       # Python dependencies
 ```
 
 ## License
