@@ -16,6 +16,8 @@ Assumes Python knowledge. No prior web experience needed.
 | 2 | HTML | [chapter2](en/code/chapter2) |
 | 3 | CSS Basics | [chapter3](en/code/chapter3) |
 | 4 | Servers with FastAPI | [chapter4](en/code/chapter4) |
+| 5 | Templates with Jinja | [chapter5](en/code/chapter5) |
+| 6 | Forms and User Input | [chapter6](en/code/chapter6) |
 
 More chapters will be added.
 

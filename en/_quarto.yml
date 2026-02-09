@@ -14,6 +14,7 @@ book:
     - chapters/chapter3.qmd
     - chapters/chapter4.qmd
     - chapters/chapter5.qmd
+    - chapters/chapter6.qmd
     - references.qmd
 
 format:

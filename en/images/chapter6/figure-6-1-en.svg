@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 340">
+  <style>
+    .background { fill: #f8f9fa; }
+    .get-box { fill: #e6f7ff; stroke: #1890ff; stroke-width: 1.5; }
+    .post-box { fill: #fff7e6; stroke: #fa8c16; stroke-width: 1.5; }
+    .highlight { fill: #fffbe6; stroke: #faad14; stroke-width: 2; }
+    .dim-text { fill: #aaa; }
+    .arrow { stroke: #666; stroke-width: 1.5; fill: none; }
+    .label { font-family: 'Arial', sans-serif; font-size: 12px; text-anchor: middle; fill: #333; }
+    .label-small { font-family: 'Arial', sans-serif; font-size: 11px; text-anchor: middle; fill: #666; }
+    .code-text { font-family: 'Consolas', 'Monaco', monospace; font-size: 11px; fill: #555; text-anchor: start; }
+    .code-bold { font-family: 'Consolas', 'Monaco', monospace; font-size: 11px; fill: #333; font-weight: bold; text-anchor: start; }
+    .title { font-family: 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+    .box-title { font-family: 'Arial', sans-serif; font-size: 13px; font-weight: bold; text-anchor: middle; }
+    .divider { stroke: #ddd; stroke-width: 1; stroke-dasharray: 6,4; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#666" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="750" height="340" class="background" />
+
+  <!-- Title -->
+  <text x="375" y="30" class="title">GET vs POST: Where the Data Travels</text>
+
+  <!-- Vertical divider -->
+  <line x1="375" y1="50" x2="375" y2="295" class="divider" />
+
+  <!-- === GET side (left) === -->
+  <text x="195" y="65" class="box-title" fill="#1890ff">GET Request</text>
+
+  <rect x="30" y="80" width="330" height="130" rx="6" ry="6" class="get-box" />
+
+  <text x="45" y="105" class="code-text">GET /search</text>
+  <!-- Highlighted query string -->
+  <rect x="117" y="91" width="175" height="18" rx="3" ry="3" class="highlight" />
+  <text x="120" y="105" class="code-bold">?q=python&amp;limit=10</text>
+  <text x="45" y="125" class="code-text">HTTP/1.1</text>
+  <text x="45" y="148" class="code-text">Host: localhost:8000</text>
+
+  <text x="45" y="175" class="code-text dim-text">(no body)</text>
+
+  <text x="195" y="235" class="label-small">Data is in the URL</text>
+  <text x="195" y="252" class="label-small">Visible in address bar, bookmarkable</text>
+  <text x="195" y="269" class="label-small">Good for: searches, filters, pagination</text>
+
+  <!-- === POST side (right) === -->
+  <text x="555" y="65" class="box-title" fill="#d46b08">POST Request</text>
+
+  <rect x="390" y="80" width="330" height="130" rx="6" ry="6" class="post-box" />
+
+  <text x="405" y="105" class="code-text">POST /contact HTTP/1.1</text>
+  <text x="405" y="125" class="code-text">Host: localhost:8000</text>
+  <text x="405" y="145" class="code-text">Content-Type: application/</text>
+  <text x="415" y="160" class="code-text">x-www-form-urlencoded</text>
+
+  <!-- Highlighted body -->
+  <rect x="405" y="172" width="295" height="30" rx="3" ry="3" class="highlight" />
+  <text x="410" y="192" class="code-bold">name=Maria&amp;email=maria%40example.com</text>
+
+  <text x="555" y="235" class="label-small">Data is in the request body</text>
+  <text x="555" y="252" class="label-small">Not in the URL, not in history</text>
+  <text x="555" y="269" class="label-small">Good for: creating, updating, deleting</text>
+
+  <!-- Bottom note -->
+  <text x="375" y="310" class="label-small">Same key=value format. Different location. The method determines which.</text>
+</svg>

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 300">
+  <style>
+    .background { fill: #f8f9fa; }
+    .browser-box { fill: #e6f7ff; stroke: #1890ff; stroke-width: 1.5; }
+    .server-box { fill: #f6ffed; stroke: #52c41a; stroke-width: 1.5; }
+    .template-box { fill: #fff7e6; stroke: #fa8c16; stroke-width: 1.5; }
+    .arrow { stroke: #666; stroke-width: 1.5; fill: none; }
+    .arrow-return { stroke: #1890ff; stroke-width: 1.5; fill: none; }
+    .label-small { font-family: 'Arial', sans-serif; font-size: 11px; text-anchor: middle; fill: #666; }
+    .code-text { font-family: 'Consolas', 'Monaco', monospace; font-size: 11px; fill: #555; text-anchor: middle; }
+    .title { font-family: 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+    .box-title { font-family: 'Arial', sans-serif; font-size: 13px; font-weight: bold; text-anchor: middle; }
+    .step-num { font-family: 'Arial', sans-serif; font-size: 11px; font-weight: bold; fill: #fff; text-anchor: middle; }
+    .step-circle { fill: #666; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#666" />
+    </marker>
+    <marker id="arrowhead-blue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#1890ff" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="750" height="300" class="background" />
+
+  <!-- Title -->
+  <text x="375" y="30" class="title">The Form Submission Cycle</text>
+
+  <!--
+    3 boxes × 170px + 2 gaps × 80px = 670px
+    Margin each side: (750 − 670) / 2 = 40px
+
+    Box 1 (Browser):  40–210, center 125
+    Gap 1:           210–290, center 250
+    Box 2 (FastAPI): 290–460, center 375
+    Gap 2:           460–540, center 500
+    Box 3 (Template):540–710, center 625
+
+    Return line: 625 → 125, midpoint = 375 = SVG center ✓
+  -->
+
+  <!-- Browser box -->
+  <rect x="40" y="55" width="170" height="100" rx="6" ry="6" class="browser-box" />
+  <text x="125" y="80" class="box-title" fill="#1890ff">Browser</text>
+  <text x="125" y="103" class="label-small">User fills out form</text>
+  <text x="125" y="120" class="code-text">name = "Maria"</text>
+  <text x="125" y="140" class="label-small">Clicks submit</text>
+
+  <!-- Step 1 arrow -->
+  <circle cx="250" cy="88" r="10" class="step-circle" />
+  <text x="250" y="92" class="step-num">1</text>
+  <line x1="210" y1="105" x2="282" y2="105" class="arrow" marker-end="url(#arrowhead)" />
+  <text x="246" y="125" class="code-text">POST /</text>
+  <text x="246" y="140" class="label-small">name=Maria</text>
+
+  <!-- FastAPI box -->
+  <rect x="290" y="55" width="170" height="100" rx="6" ry="6" class="server-box" />
+  <text x="375" y="80" class="box-title" fill="#389e0d">FastAPI</text>
+  <text x="375" y="103" class="label-small">Extracts form data</text>
+  <text x="375" y="120" class="code-text">name: str = Form()</text>
+  <text x="375" y="140" class="label-small">Passes to template</text>
+
+  <!-- Step 2 arrow -->
+  <circle cx="500" cy="88" r="10" class="step-circle" />
+  <text x="500" y="92" class="step-num">2</text>
+  <line x1="460" y1="105" x2="532" y2="105" class="arrow" marker-end="url(#arrowhead)" />
+  <text x="496" y="125" class="label-small">render</text>
+  <text x="496" y="140" class="label-small">template</text>
+
+  <!-- Template box -->
+  <rect x="540" y="55" width="170" height="100" rx="6" ry="6" class="template-box" />
+  <text x="625" y="80" class="box-title" fill="#d46b08">Template</text>
+  <text x="625" y="103" class="label-small">Fills in placeholders</text>
+  <text x="625" y="120" class="code-text">{{ greeting }}</text>
+  <text x="625" y="140" class="label-small">→ Hello, Maria!</text>
+
+  <!-- Step 3: return arrow, then mask circle + step circle on top -->
+  <path d="M 625,155 L 625,205 L 125,205 L 125,155" class="arrow-return" marker-end="url(#arrowhead-blue)" />
+  <circle cx="375" cy="205" r="13" fill="#f8f9fa" />
+  <circle cx="375" cy="205" r="10" class="step-circle" />
+  <text x="375" y="209" class="step-num">3</text>
+  <text x="375" y="232" class="label-small">HTML response sent back to browser</text>
+
+  <!-- Bottom note -->
+  <text x="375" y="267" class="label-small">Form() extracts data from the POST body. The template turns it into HTML.</text>
+  <text x="375" y="282" class="label-small">The browser displays the result.</text>
+</svg>

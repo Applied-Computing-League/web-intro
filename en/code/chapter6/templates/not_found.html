@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Not Found{% endblock %}
+
+{% block header_title %}Not Found{% endblock %}
+
+{% block content %}
+<section>
+    <h2>Profile Not Found</h2>
+    <p>No profile exists for "{{ username }}".</p>
+    <p><a href="/">Go back home</a></p>
+</section>
+{% endblock %}
+
+{% block footer_name %}My Site{% endblock %}
