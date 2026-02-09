@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Guestbook{% endblock %}
+
+{% block header_title %}Guestbook{% endblock %}
+
+{% block content %}
+<h2>Leave a Message</h2>
+
+{% if errors %}
+<div class="errors">
+    {% for error in errors %}
+    <p>{{ error }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form action="/guestbook" method="POST">
+    <div>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required value="{{ form_name or '' }}">
+    </div>
+    <div>
+        <label for="message">Message</label>
+        <textarea id="message" name="message" rows="4" required>{{ form_message or '' }}</textarea>
+    </div>
+    <button type="submit">Sign Guestbook</button>
+</form>
+
+{% if messages %}
+<h2>Messages</h2>
+{% for msg in messages %}
+<div class="message">
+    <p><strong>{{ msg.name }}</strong> <span class="time">{{ msg.time }}</span></p>
+    <p>{{ msg.message }}</p>
+    <form action="/guestbook/delete/{{ loop.index0 }}" method="POST">
+        <button type="submit" class="delete-btn">Delete</button>
+    </form>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}
+
+{% block footer_name %}My Site{% endblock %}

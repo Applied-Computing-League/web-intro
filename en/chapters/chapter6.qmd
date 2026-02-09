@@ -1,0 +1,574 @@
+# Chapter 6: Forms and User Input
+
+In Chapter 2, we built HTML forms. In Chapter 5, we rendered pages with templates. But those forms didn't go anywhere. You could fill them out and click submit, and the browser would make a request, but nobody was listening on the other end. The form's `action` pointed to a URL that didn't exist on our server.
+
+This chapter connects the two sides. You'll write server code that receives form data, validates it, and does something useful with it.
+
+## How Form Data Travels
+
+When you click a submit button, the browser collects every input field in the form (specifically, every field with a `name` attribute), packages the data, and sends it to the server as an HTTP request. The form's `action` attribute determines the URL, and the `method` attribute determines whether it's a GET or POST request.
+
+Consider this form:
+
+```html
+<form action="/search" method="GET">
+    <input type="text" name="q" value="python">
+    <input type="number" name="limit" value="10">
+    <button type="submit">Search</button>
+</form>
+```
+
+When submitted, the browser makes this request:
+
+```
+GET /search?q=python&limit=10 HTTP/1.1
+Host: localhost:8000
+```
+
+The form data ends up in the query string, just like the URL parameters we saw in Chapters 1 and 4. Each input's `name` becomes a key, its value becomes the value.
+
+Now consider a POST form:
+
+```html
+<form action="/contact" method="POST">
+    <input type="text" name="name" value="Maria">
+    <input type="email" name="email" value="maria@example.com">
+    <textarea name="message">Hello there</textarea>
+    <button type="submit">Send</button>
+</form>
+```
+
+The request looks different:
+
+```
+POST /contact HTTP/1.1
+Host: localhost:8000
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 53
+
+name=Maria&email=maria%40example.com&message=Hello+there
+```
+
+The data isn't in the URL. It's in the request body, after the headers. The format looks similar (key=value pairs separated by &), but notice the encoding: the `@` became `%40` and the space became `+`. This is URL encoding, and the browser handles it automatically. Special characters get encoded for safe transmission.
+
+![GET vs POST: where the data travels](../images/chapter6/figure-6-1-en.svg)
+
+The `Content-Type: application/x-www-form-urlencoded` header tells the server how to parse the body. This is the default encoding for HTML forms. The data always travels as text, regardless of what type of input field it came from. A number input sends the string `"10"`, not the integer 10. Your server code needs to handle that conversion.
+
+So GET and POST both send key-value pairs, but they put them in different places. The question is when to use which.
+
+## GET vs POST for Forms
+
+Both methods send data to the server, but they're meant for different situations.
+
+**GET** puts data in the URL. This means the data is visible in the address bar, saved in browser history, and bookmarkable. When you search for something on Google, the search term is in the URL: `google.com/search?q=python`. You can copy that URL, send it to someone, and they'll see the same results. GET requests are for reading data, not changing it. Searches, filters, pagination: all GET.
+
+**POST** puts data in the request body. It's not visible in the address bar, not saved in history, and not bookmarkable. POST requests are for actions that change something: creating an account, sending a message, updating a profile, placing an order. If the operation writes data or has side effects, use POST.
+
+The practical test: if a user refreshes the page after submitting, should the action happen again? For a search, yes (GET). For placing an order, absolutely not (POST). Browsers reinforce this by showing a warning when you try to refresh after a POST submission ("Are you sure you want to resubmit the form?").
+
+There's also a size consideration. URLs have practical length limits (around 2000 characters in most browsers). A search query fits fine. A blog post doesn't. POST has no such limit because the data is in the body.
+
+Most application features (creating things, logging in, sending messages) use POST forms, so that's what we'll focus on. GET forms for search are simpler because FastAPI already handles query parameters, as we saw in Chapter 4. But how does FastAPI know the difference between a query parameter and form data in a POST body?
+
+## Receiving Form Data in FastAPI
+
+The answer is a new import: `Form`. Let's build a minimal example to see how it works. Create a new project for this chapter:
+
+```bash
+mkdir chapter6
+cd chapter6
+uv init
+uv add "fastapi[standard]"
+```
+
+Set up the folder structure:
+
+```
+chapter6/
+├── .venv/
+├── main.py
+├── pyproject.toml
+└── templates/
+    └── hello.html
+```
+
+In `main.py`:
+
+```python
+# main.py
+from fastapi import FastAPI, Request, Form
+from fastapi.templating import Jinja2Templates
+
+app = FastAPI()
+templates = Jinja2Templates(directory="templates")
+```
+
+The new import here is `Form`. This is how FastAPI knows a parameter comes from form data rather than a query string or path.
+
+Now create a page with a simple form and an endpoint to handle it:
+
+```python
+# main.py
+# ...imports and setup above
+
+@app.get("/")
+def show_form(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="hello.html",
+        context={"greeting": None}
+    )
+
+
+@app.post("/")
+def handle_form(request: Request, name: str = Form()):
+    return templates.TemplateResponse(
+        request=request,
+        name="hello.html",
+        context={"greeting": f"Hello, {name}!"}
+    )
+```
+
+Two relevant things to notice. GET and POST to the same URL (`/`) trigger different functions. The browser visiting the page is a GET. Submitting the form is a POST.
+
+The parameter `name: str = Form()` tells FastAPI to look for a value called `name` in the form data of the POST request body. Without `Form()`, FastAPI would look for a query parameter. The `Form()` default is what tells it to parse the request body instead.
+
+The template in `templates/hello.html`:
+
+```html
+<!DOCTYPE html>
+<html>
+<head><title>Hello</title></head>
+<body>
+    {% if greeting %}
+    <p>{{ greeting }}</p>
+    {% endif %}
+
+    <form action="/" method="POST">
+        <label for="name">Your name</label>
+        <input type="text" id="name" name="name" required>
+        <button type="submit">Say Hello</button>
+    </form>
+</body>
+</html>
+```
+
+Run it with `uv run fastapi dev main.py`, visit `http://localhost:8000`, type your name, and submit. The page reloads with a greeting. Open the Network tab and watch the POST request. The form data is in the request body, and the `name` attribute on the input matches the `Form()` parameter in your Python function.
+
+The full cycle of what just happened is this:
+
+![The form submission cycle](../images/chapter6/figure-6-2-en.svg)
+
+The browser sends the form data in a POST request. FastAPI extracts the `name` parameter from the body, passes it to your function, and your function returns HTML through the template. This is the same request-response cycle from Chapter 1, but now with data flowing from user to server.
+
+It works, but there's a problem. Type a single space, hit submit, and you get "Hello,  !" with an awkward gap. The server accepts anything.
+
+## Validation
+
+In a real application, bad input causes real problems: empty rows in your database, broken layouts, security vulnerabilities. Validation means checking that input meets your requirements before you do anything with it. There are two places to validate: in the browser (client-side) and on the server (server-side). You need both, in the client for a good user experience and on the server for security reasons.
+
+Client-side validation gives users immediate feedback. The `required` attribute prevents empty submissions. You can also use `minlength`, `maxlength`, and `pattern`:
+
+```html
+<input type="text" name="name" required minlength="2" maxlength="100">
+```
+
+But client-side validation is easily bypassed. Anyone can open developer tools, remove the `required` attribute, and submit. Or send a POST request directly with curl, skipping the browser entirely. Server-side validation is the one that actually protects your application.
+
+Let's add validation to our endpoint:
+
+```python
+# main.py
+# replace the existing handle_form function
+
+@app.post("/")
+def handle_form(request: Request, name: str = Form()):
+    name = name.strip()
+
+    if not name:
+        return templates.TemplateResponse(
+            request=request,
+            name="hello.html",
+            context={"greeting": None, "error": "Name is required."}
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="hello.html",
+        context={"greeting": f"Hello, {name}!"}
+    )
+```
+
+`strip()` removes whitespace from both ends. A name that's just spaces becomes an empty string, which fails the check. When validation fails, we re-render the form with an error message instead of a greeting.
+
+Update the template to show errors:
+
+```html
+<!DOCTYPE html>
+<html>
+<head><title>Hello</title></head>
+<body>
+    {% if greeting %}
+    <p>{{ greeting }}</p>
+    {% endif %}
+
+    {% if error %}
+    <p style="color: red;">{{ error }}</p>
+    {% endif %}
+
+    <form action="/" method="POST">
+        <label for="name">Your name</label>
+        <input type="text" id="name" name="name" required>
+        <button type="submit">Say Hello</button>
+    </form>
+</body>
+</html>
+```
+
+Try it: use dev tools to remove the `required` attribute, submit an empty form, and you'll see the error. The browser validation is a convenience for users, the server validation is the actual safety net.
+
+For forms with more fields, you'd collect errors into a list and pass the user's input back so they don't have to retype everything:
+
+```python
+errors = []
+if not name:
+    errors.append("Name is required.")
+if not email:
+    errors.append("Email is required.")
+
+if errors:
+    return templates.TemplateResponse(
+        request=request,
+        name="form.html",
+        context={"errors": errors, "form_name": name, "form_email": email}
+    )
+```
+
+Then in the template, `value="{{ form_name or '' }}"` preserves what the user typed.
+
+This works fine for a form with two fields. But validation logic gets repetitive fast: strip this, check if it's empty, check if it's too long, check if it's a valid email. For each field. Every time. Pydantic gives you a cleaner way.
+
+## Validation with Pydantic
+
+Pydantic is a library for defining data shapes and validation rules in one place. FastAPI already uses it under the hood (it's how type hints like `user_id: int` get validated automatically in path parameters). Now we'll use it directly.
+
+A Pydantic model is a class that describes what valid data looks like:
+
+```python
+from pydantic import BaseModel, Field
+
+class HelloForm(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+```
+
+This says: `name` must be a string, at least 1 character, at most 100. If you try to create a `HelloForm` with invalid data, Pydantic raises a `ValidationError`:
+
+```python
+from pydantic import ValidationError
+
+try:
+    data = HelloForm(name="")
+except ValidationError as e:
+    print(e.errors())
+    # [{'type': 'string_too_short',
+    #   'msg': 'String should have at least 1 character',
+    #   ...}]
+```
+
+The error messages are generated automatically from your constraints. You don't write them yourself (though you can customize them if you want).
+
+Here's how this fits into a FastAPI endpoint:
+
+```python
+# main.py
+# replace the existing handle_form function
+
+from pydantic import BaseModel, Field, ValidationError
+
+class HelloForm(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+
+
+@app.post("/")
+def handle_form(request: Request, name: str = Form()):
+    try:
+        data = HelloForm(name=name.strip())
+    except ValidationError as e:
+        errors = [err["msg"] for err in e.errors()]
+        return templates.TemplateResponse(
+            request=request,
+            name="hello.html",
+            context={"greeting": None, "errors": errors}
+        )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="hello.html",
+        context={"greeting": f"Hello, {data.name}!"}
+    )
+```
+
+We still use `Form()` to extract the raw string from the request body. Then we pass it to the Pydantic model, which validates it. If validation fails, we catch the error and extract the messages. If it succeeds, we use `data.name` (the validated, clean value).
+
+The pattern is: `Form()` gets the data out of the request, Pydantic checks whether it's valid.
+
+For a single field, this might seem like more code than the manual `if not name` check. The payoff comes with more fields and more rules. Here's a model for a contact form:
+
+```python
+class ContactForm(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    email: str = Field(min_length=1, max_length=200)
+    message: str = Field(min_length=1, max_length=2000)
+```
+
+Three fields, six constraints, zero if statements. You can add more rules with `pattern` for regex matching, or write custom validators with `@field_validator` when the built-in constraints aren't enough. The Pydantic documentation covers these in detail.
+
+One more thing about security: what if someone submits `<script>alert('hi')</script>` as their name? Jinja auto-escapes HTML in template variables by default, so the script tag gets rendered as harmless text, not executed. This is one of the reasons we use a template engine instead of building HTML strings manually.
+
+Our form now validates data properly, but there's still a usability problem. Submit a name, see the greeting, then press F5 to refresh. The browser shows a warning about resubmitting form data.
+
+## Post-Redirect-Get
+
+This happens because refreshing repeats the last request. If the last request was a POST, the browser sends the same POST again. For our hello form this is harmless. But imagine a form that places an order or sends an email. Refreshing would place the order twice or send duplicate messages.
+
+The fix is a pattern called **Post-Redirect-Get** (PRG). Instead of returning HTML directly from the POST handler, you redirect the user to a GET page:
+
+1. User submits form (POST)
+2. Server processes the data
+3. Server responds with a redirect (HTTP 303) to a GET URL
+4. Browser follows the redirect and loads the page via GET
+5. User sees the result
+
+Now if the user refreshes, they're refreshing a GET request. No resubmission.
+
+![The Post-Redirect-Get pattern](../images/chapter6/figure-6-3-en.svg)
+
+The browser handles the redirect automatically. The user doesn't notice it happened. Let's update our example:
+
+```python
+# main.py
+# updated imports
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
+```
+
+Then replace the existing handle_form function:
+
+```python
+# main.py
+
+@app.post("/")
+def handle_form(request: Request, name: str = Form()):
+    try:
+        data = HelloForm(name=name.strip())
+    except ValidationError as e:
+        errors = [err["msg"] for err in e.errors()]
+        return templates.TemplateResponse(
+            request=request,
+            name="hello.html",
+            context={"greeting": None, "errors": errors}
+        )
+
+    # In a real app, you'd save the data here
+    return RedirectResponse(url=f"/?greeting={data.name}", status_code=303)
+```
+
+The `status_code=303` tells the browser to follow the redirect with a GET request. We're passing the name through the URL so the GET handler can display it:
+
+```python
+# main.py
+# replace the existing show_form function
+
+@app.get("/")
+def show_form(request: Request, greeting: str | None = None):
+    context = {"greeting": f"Hello, {greeting}!" if greeting else None}
+    return templates.TemplateResponse(
+        request=request,
+        name="hello.html",
+        context=context
+    )
+```
+
+Submit a name, then refresh. No warning. No resubmission.
+
+Passing data through the URL query string works for this tiny example, but it's awkward for real applications. When we build the guestbook in the hands-on, the data goes into a list (and later, a database). The redirect just sends the user to the page that displays the stored data. The pattern is: POST saves the data, redirect goes to the page, GET reads and displays it.
+
+When validation fails, we still render the template directly (no redirect). The user needs to see the errors and their partially filled form. PRG only happens on success.
+
+That covers all the pieces. Time to apply them to the profile site we've been building.
+
+## Hands-On: Adding a Guestbook to the Profile Site
+
+Our profile site from Chapter 5 has profile pages, a base template, and static CSS. We're going to add a new page: a guestbook where visitors can leave messages. This means a new template, new routes, and new CSS, all integrated with the existing site.
+
+Start from your Chapter 5 project. If you don't have it handy, grab it from the repository. Your folder structure should currently look like this:
+
+```
+chapter5/
+├── .venv/
+├── main.py
+├── pyproject.toml
+├── static/
+│   └── profile.css
+└── templates/
+    ├── base.html
+    ├── not_found.html
+    └── profile.html
+```
+
+Copy it into a new folder for this chapter:
+
+```bash
+cp -r chapter5 chapter6
+cd chapter6
+```
+
+We need a few new files. Add a guestbook template and rename the CSS file (it's no longer just for profiles):
+
+```
+chapter6/
+├── .venv/
+├── main.py
+├── pyproject.toml
+├── static/
+│   └── style.css
+└── templates/
+    ├── base.html
+    ├── guestbook.html
+    ├── not_found.html
+    └── profile.html
+```
+
+Rename `profile.css` to `style.css` and update the `<link>` in `base.html` to match. Then add a guestbook link to the navigation in `base.html`:
+
+```html
+<nav>
+    <a href="/">Home</a>
+    <a href="/guestbook">Guestbook</a>
+    <a href="/about">About</a>
+</nav>
+```
+
+Now update `main.py`. You'll need the new imports we learned about in this chapter:
+
+```python
+# main.py
+# add to the existing imports
+from datetime import datetime
+from pydantic import BaseModel, Field, ValidationError
+from fastapi import FastAPI, Request, Form
+from fastapi.responses import RedirectResponse
+```
+
+Add a Pydantic model for the guestbook form and storage for messages:
+
+```python
+# main.py
+# ...imports and setup above
+
+class GuestbookEntry(BaseModel):
+    name: str = Field(min_length=1, max_length=100)
+    message: str = Field(min_length=1, max_length=500)
+
+messages = []
+```
+
+Now you need to write three things with these requirements:
+
+**A GET endpoint at `/guestbook`** that renders `guestbook.html` with the messages list in the context.
+
+**A POST endpoint at `/guestbook`** that:
+
+- Receives `name` and `message` via `Form()`
+- Strips whitespace and validates with the `GuestbookEntry` model
+- On failure: re-renders the template with errors and the user's input preserved
+- On success: appends a dictionary (with `name`, `message`, and a formatted `time`) to the messages list and redirects to `/guestbook`
+
+For the timestamp, `datetime.now().strftime("%B %d, %Y at %I:%M %p")` gives you something like "January 15, 2025 at 02:30 PM". Store each message as a dictionary with `name`, `message`, and `time` keys.
+
+**A POST endpoint at `/guestbook/delete/{index}`** that removes a message by index and redirects to `/guestbook`. Include a bounds check so invalid indices don't crash the server.
+
+Now create `templates/guestbook.html`. It should extend `base.html` and include these:
+
+- An error display section (if errors exist in the context)
+- A form with `action="/guestbook"` and `method="POST"` containing a text input for `name`, a textarea for `message`, and a submit button
+- The inputs should preserve the user's data on validation failure (using `value="{{ form_name or '' }}"` for the input and `{{ form_message or '' }}` between the textarea tags)
+- A messages section that loops through `messages` and displays each one's name, time, and message
+- A delete button for each message (a small form that POSTs to `/guestbook/delete/{{ loop.index0 }}`)
+
+Here's a skeleton to get you started:
+
+```html
+{% extends "base.html" %}
+
+{% block title %}Guestbook{% endblock %}
+
+{% block content %}
+<h1>Guestbook</h1>
+
+<!-- TODO: show errors if they exist -->
+
+<form action="/guestbook" method="POST">
+    <!-- TODO: name input and message textarea -->
+    <!-- TODO: preserve user input on validation failure -->
+    <button type="submit">Sign Guestbook</button>
+</form>
+
+{% if messages %}
+<h2>Messages</h2>
+{% for msg in messages %}
+<div class="message">
+    <!-- TODO: display msg.name, msg.time, msg.message -->
+    <!-- TODO: delete button (its own small form) -->
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}
+```
+
+For the CSS, add guestbook styles to `static/style.css`. You need styles for the form layout (stacked labels and inputs), form inputs and the submit button, message cards with the name and timestamp, an error display with a red border, and the delete button (subtle, not a full button). You've styled forms and cards before in Chapters 3 and 5. Apply the same principles.
+
+Test your work:
+
+- Submit a few messages. Do they appear with timestamps?
+- Submit with empty fields (use dev tools to bypass the `required` attribute). Do you see Pydantic's error messages? Is your input preserved?
+- Submit a valid message, then refresh. Do you get the resubmission warning? (You shouldn't, if PRG is working.)
+- Delete a message. Does it disappear?
+- Check the Network tab. Can you see the POST → 303 → GET sequence?
+- Navigate between profile pages and the guestbook. Does the nav work?
+
+When everything works, your guestbook should look something like this (your styling will vary):
+
+![The guestbook page integrated with the profile site](../images/chapter6/figure-6-4-en.png)
+
+::: {.callout-tip collapse="true"}
+## Stuck? Solution available
+
+If you've given it an honest try and are truly stuck, a completed version of this project is available at [github.com/Applied-Computing-League/practical-web-development/en/code/chapter6](https://github.com/Applied-Computing-League/practical-web-development/tree/main/en/code/chapter6). Try to solve it yourself first. You learn more from the struggle than from reading the answer.
+:::
+
+## Chapter Summary
+
+- HTML forms send data to the server as key-value pairs via GET (query string) or POST (request body)
+- Use GET for reading (searches, filters) and POST for actions that change data
+- In FastAPI, `Form()` tells a parameter to read from the request body instead of the query string
+- Pydantic models define validation rules in one place: `Field(min_length=1, max_length=100)`
+- Always validate on the server, even if you also validate in the browser
+- Post-Redirect-Get prevents duplicate submissions on refresh: process the POST, redirect to a GET page
+- When validation fails, re-render the form with errors and the user's input preserved
+
+## Exercises
+
+1. Add a "character count" display below the message textarea that updates as the user types. This requires a small amount of JavaScript: add a `<script>` tag at the bottom of your template that listens for the `input` event on the textarea and updates a `<span>` with the current length. You haven't learned JavaScript yet, but you can figure this out (or ask for a hint). This is client-side only; the server doesn't need to change.
+
+2. The delete endpoint has no protection. Anyone who knows the URL can delete messages. Add a simple "admin password" check: the delete form should include a hidden input with a password, and the endpoint should only delete if the password matches a value you hardcode in your Python code. This isn't real security (we'll cover authentication later), but it demonstrates how hidden form fields work.
+
+3. Add an optional "email" field to the guestbook. Update the Pydantic model to allow it (hint: use `str | None = None` with `Field(default=None, max_length=200)`). When provided, display it next to the name. Add a custom Pydantic validator using `@field_validator` that checks the email contains an `@` symbol if it's not None.
+
+4. Right now messages are lost when the server restarts. Use Python's `json` module to save messages to a JSON file when a message is added or deleted, and load them when the server starts. The file should be created automatically if it doesn't exist.
+
+5. Add pagination: only show the 10 most recent messages, with a "Show all" link that displays everything. You'll need a query parameter (`?all=true`) and a conditional in the template. Think about whether the messages should be stored newest-first or oldest-first, and why.
+
+6. Test your validation by bypassing the browser. Use the `/docs` endpoint to submit a POST request with empty fields, with fields that are too long, and with valid data. Watch how your server responds to each case. Then try submitting with curl from your terminal (the docs page shows you the curl command).

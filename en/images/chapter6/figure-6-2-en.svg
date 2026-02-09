@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 360">
+  <style>
+    .background { fill: #f8f9fa; }
+    .browser-box { fill: #e6f7ff; stroke: #1890ff; stroke-width: 1.5; }
+    .server-box { fill: #f6ffed; stroke: #52c41a; stroke-width: 1.5; }
+    .redirect-box { fill: #fff7e6; stroke: #fa8c16; stroke-width: 1.5; }
+    .safe-box { fill: #f6ffed; stroke: #52c41a; stroke-width: 1.5; stroke-dasharray: 5,3; }
+    .arrow { stroke: #666; stroke-width: 1.5; fill: none; }
+    .arrow-redirect { stroke: #fa8c16; stroke-width: 1.5; fill: none; }
+    .arrow-safe { stroke: #52c41a; stroke-width: 1.5; fill: none; stroke-dasharray: 5,3; }
+    .label-small { font-family: 'Arial', sans-serif; font-size: 11px; text-anchor: middle; fill: #666; }
+    .label-safe { font-family: 'Arial', sans-serif; font-size: 11px; text-anchor: middle; fill: #389e0d; }
+    .code-text { font-family: 'Consolas', 'Monaco', monospace; font-size: 11px; fill: #555; text-anchor: middle; }
+    .title { font-family: 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+    .box-title { font-family: 'Arial', sans-serif; font-size: 13px; font-weight: bold; text-anchor: middle; }
+    .step-num { font-family: 'Arial', sans-serif; font-size: 11px; font-weight: bold; fill: #fff; text-anchor: middle; }
+    .step-circle { fill: #666; }
+    .step-circle-orange { fill: #fa8c16; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#666" />
+    </marker>
+    <marker id="arrowhead-orange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#fa8c16" />
+    </marker>
+    <marker id="arrowhead-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#52c41a" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="750" height="360" class="background" />
+
+  <!-- Title -->
+  <text x="375" y="30" class="title">The Post-Redirect-Get Pattern</text>
+
+  <!--
+    Row 1 (y=55, h=55, bottom=110):
+      Browser:   30–130  (100w, center 80)
+      Gap 1:    130–280  (150w, center 205)
+      Server:   280–400  (120w, center 340)
+      Gap 2:    400–520  (120w, center 460)
+      Redirect: 520–620  (100w, center 570)
+
+    Between rows: 110–170 (60px gap)
+
+    Row 2 (y=170, h=55, bottom=225):
+      Same x positions
+  -->
+
+  <!-- === Row 1 === -->
+
+  <!-- Browser -->
+  <rect x="30" y="55" width="100" height="55" rx="6" ry="6" class="browser-box" />
+  <text x="80" y="78" class="box-title" fill="#1890ff">Browser</text>
+  <text x="80" y="96" class="label-small">User clicks submit</text>
+
+  <!-- Step 1 arrow -->
+  <circle cx="205" cy="63" r="10" class="step-circle" />
+  <text x="205" y="67" class="step-num">1</text>
+  <line x1="130" y1="82" x2="272" y2="82" class="arrow" marker-end="url(#arrowhead)" />
+  <text x="201" y="100" class="code-text">POST /guestbook</text>
+  <text x="201" y="114" class="label-small">form data</text>
+
+  <!-- Server -->
+  <rect x="280" y="55" width="120" height="55" rx="6" ry="6" class="server-box" />
+  <text x="340" y="78" class="box-title" fill="#389e0d">Server</text>
+  <text x="340" y="96" class="label-small">Saves data to list</text>
+
+  <!-- Step 2 arrow -->
+  <circle cx="460" cy="63" r="10" class="step-circle-orange" />
+  <text x="460" y="67" class="step-num">2</text>
+  <line x1="400" y1="82" x2="512" y2="82" class="arrow-redirect" marker-end="url(#arrowhead-orange)" />
+  <text x="456" y="100" class="code-text">303 See Other</text>
+  <text x="456" y="114" class="label-small">→ /guestbook</text>
+
+  <!-- Redirect -->
+  <rect x="520" y="55" width="100" height="55" rx="6" ry="6" class="redirect-box" />
+  <text x="570" y="78" class="box-title" fill="#d46b08">Redirect</text>
+  <text x="570" y="96" class="label-small">Browser follows</text>
+
+  <!-- Redirect curve: right → down to between-row gap → left → down into browser top -->
+  <path d="M 620,82 L 670,82 L 670,140 L 80,140 L 80,170" class="arrow-redirect" marker-end="url(#arrowhead-orange)" />
+
+  <!-- === Row 2 === -->
+
+  <!-- Browser again -->
+  <rect x="30" y="170" width="100" height="55" rx="6" ry="6" class="browser-box" />
+  <text x="80" y="193" class="box-title" fill="#1890ff">Browser</text>
+  <text x="80" y="211" class="label-small">Automatic</text>
+
+  <!-- Step 3 arrow -->
+  <circle cx="205" cy="178" r="10" class="step-circle" />
+  <text x="205" y="182" class="step-num">3</text>
+  <line x1="130" y1="197" x2="272" y2="197" class="arrow" marker-end="url(#arrowhead)" />
+  <text x="201" y="215" class="code-text">GET /guestbook</text>
+
+  <!-- Server returns page -->
+  <rect x="280" y="170" width="120" height="55" rx="6" ry="6" class="server-box" />
+  <text x="340" y="193" class="box-title" fill="#389e0d">Server</text>
+  <text x="340" y="211" class="label-small">Returns the page</text>
+
+  <!-- Arrow to final page -->
+  <line x1="400" y1="197" x2="512" y2="197" class="arrow" marker-end="url(#arrowhead)" />
+  <text x="456" y="215" class="code-text">200 OK</text>
+
+  <!-- Page result -->
+  <rect x="520" y="170" width="100" height="55" rx="6" ry="6" class="browser-box" />
+  <text x="570" y="193" class="box-title" fill="#1890ff">Page</text>
+  <text x="570" y="211" class="label-small">User sees result</text>
+
+  <!-- === Refresh is safe === -->
+  <path d="M 570,225 L 570,248" class="arrow-safe" marker-end="url(#arrowhead-green)" />
+  <rect x="468" y="250" width="205" height="45" rx="6" ry="6" class="safe-box" />
+  <text x="570" y="269" class="label-safe">User presses F5 (refresh)</text>
+  <text x="570" y="283" class="label-safe">→ repeats GET, not POST</text>
+
+  <!-- Bottom comparison -->
+  <text x="375" y="325" class="label-small">Without PRG: refresh repeats the POST → duplicate data</text>
+  <text x="375" y="342" class="label-small">With PRG: refresh repeats the GET → safe reload</text>
+</svg>
