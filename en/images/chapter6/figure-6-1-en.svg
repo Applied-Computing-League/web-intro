@@ -60,7 +60,7 @@
 
   <!-- Highlighted body -->
   <rect x="405" y="172" width="295" height="30" rx="3" ry="3" class="highlight" />
-  <text x="410" y="192" class="code-bold">name=Maria&amp;email=maria%40example.com</text>
+  <text x="410" y="192" class="code-bold">name=Matheus&amp;email=matheus%40example.com</text>
 
   <text x="555" y="235" class="label-small">Data is in the request body</text>
   <text x="555" y="252" class="label-small">Not in the URL, not in history</text>

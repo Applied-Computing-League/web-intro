@@ -16,14 +16,14 @@ profiles = {
         "skills": ["Math", "Having Long Hair", "Video Recording"],
         "email": "philipe@example.com",
     },
-    "maria": {
-        "name": "Maria Santos",
+    "matheus": {
+        "name": "Matheus",
         "about": [
-            "Software developer by day, guitarist by night.",
-            "I believe code should be as elegant as music.",
+            "Applied math student at UFRJ interested in product and strategy.",
+            "Part of the management team at the Applied Computing League.",
         ],
-        "skills": ["Python", "FastAPI", "Guitar", "Coffee Brewing"],
-        "email": "maria@example.com",
+        "skills": ["Product Management", "UX Research", "Strategy", "Analytics"],
+        "email": "matheus@example.com",
     },
 }
 
