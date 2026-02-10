@@ -1,0 +1,15 @@
+{% if profiles %}
+{% for username, profile in profiles.items() %}
+<div class="profile-card">
+    <h2><a href="/profile/{{ username }}">{{ profile.name }}</a></h2>
+    <p>{{ profile.about[0] }}</p>
+    <div class="profile-skills">
+        {% for skill in profile.skills %}
+        <span class="skill-tag">{{ skill }}</span>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<p class="no-results">No profiles found.</p>
+{% endif %}

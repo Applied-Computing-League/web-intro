@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 750 320">
+  <style>
+    .background { fill: #f8f9fa; }
+    .page-outline { fill: #fff; stroke: #ccc; stroke-width: 1; }
+    .browser-box { fill: #e6f7ff; stroke: #1890ff; stroke-width: 1.5; }
+    .server-box { fill: #f6ffed; stroke: #52c41a; stroke-width: 1.5; }
+    .fragment-box { fill: #fff7e6; stroke: #fa8c16; stroke-width: 1.5; }
+    .untouched-box { fill: #f5f5f5; stroke: #bbb; stroke-width: 1; stroke-dasharray: 4,3; }
+    .highlight-box { fill: #fffbe6; stroke: #faad14; stroke-width: 1.5; }
+    .arrow { stroke: #666; stroke-width: 1.5; fill: none; }
+    .arrow-return { stroke: #fa8c16; stroke-width: 1.5; fill: none; }
+    .label-small { font-family: 'Arial', sans-serif; font-size: 11px; text-anchor: middle; fill: #666; }
+    .code-text { font-family: 'Consolas', 'Monaco', monospace; font-size: 10px; fill: #555; text-anchor: middle; }
+    .title { font-family: 'Arial', sans-serif; font-size: 18px; font-weight: bold; text-anchor: middle; fill: #333; }
+    .box-title { font-family: 'Arial', sans-serif; font-size: 13px; font-weight: bold; text-anchor: middle; }
+    .page-label { font-family: 'Arial', sans-serif; font-size: 10px; fill: #999; text-anchor: start; }
+    .step-num { font-family: 'Arial', sans-serif; font-size: 11px; font-weight: bold; fill: #fff; text-anchor: middle; }
+    .step-circle { fill: #666; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#666" />
+    </marker>
+    <marker id="arrowhead-orange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#fa8c16" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="750" height="320" class="background" />
+
+  <!-- Title -->
+  <text x="375" y="28" class="title">How HTMX Updates Part of a Page</text>
+
+  <!--
+    Left column (browser page):  x=40, w=210, inner padding 12px → inner x=52, w=186
+    Gap:                         x=250 to x=460 (210px, center=355)
+    Right column (server):       x=460, w=250
+
+    Browser inner sections:
+      Nav:     y=72,  h=28
+      Search:  y=110, h=35
+      Results: y=155, h=70
+      Footer:  y=238, h=28
+  -->
+
+  <!-- === Left: Browser page === -->
+  <rect x="40" y="48" width="210" height="228" rx="6" ry="6" class="page-outline" />
+  <text x="52" y="64" class="page-label">Browser</text>
+
+  <!-- Nav -->
+  <rect x="52" y="72" width="186" height="28" rx="4" ry="4" class="untouched-box" />
+  <text x="145" y="91" class="label-small">Nav (untouched)</text>
+
+  <!-- Search input -->
+  <rect x="52" y="110" width="186" height="35" rx="4" ry="4" class="highlight-box" />
+  <text x="145" y="132" class="box-title" fill="#d48806">Search input</text>
+
+  <!-- Results div -->
+  <rect x="52" y="155" width="186" height="70" rx="4" ry="4" class="fragment-box" />
+  <text x="145" y="180" class="box-title" fill="#d46b08">#results</text>
+  <text x="145" y="196" class="label-small">← swapped here</text>
+  <text x="145" y="210" class="label-small">(only this changes)</text>
+
+  <!-- Footer -->
+  <rect x="52" y="238" width="186" height="28" rx="4" ry="4" class="untouched-box" />
+  <text x="145" y="257" class="label-small">Footer (untouched)</text>
+
+  <!-- === Right: Server + Fragment === -->
+
+  <!-- Server -->
+  <rect x="460" y="60" width="250" height="70" rx="6" ry="6" class="server-box" />
+  <text x="585" y="85" class="box-title" fill="#389e0d">Server</text>
+  <text x="585" y="103" class="label-small">Filters data, renders partial template</text>
+  <text x="585" y="117" class="code-text">partials/profile_results.html</text>
+
+  <!-- "renders" label between server and fragment -->
+  <line x1="585" y1="130" x2="585" y2="158" class="arrow" marker-end="url(#arrowhead)" />
+  <text x="615" y="149" class="label-small">renders</text>
+
+  <!-- Fragment -->
+  <rect x="460" y="160" width="250" height="70" rx="6" ry="6" class="fragment-box" />
+  <text x="585" y="183" class="box-title" fill="#d46b08">HTML Fragment</text>
+  <text x="585" y="200" class="code-text">&lt;div class="card"&gt;Lucas&lt;/div&gt;</text>
+  <text x="585" y="214" class="code-text">&lt;div class="card"&gt;Arthur&lt;/div&gt;</text>
+
+  <!-- === Arrows in the gap (x=250 to x=460, center=355) === -->
+
+  <!-- Step 1: GET request (search → server), at y=95 -->
+  <line x1="250" y1="95" x2="452" y2="95" class="arrow" marker-end="url(#arrowhead)" />
+  <circle cx="355" cy="82" r="10" class="step-circle" />
+  <text x="355" y="86" class="step-num">1</text>
+  <text x="355" y="110" class="code-text">GET /search?q=lu</text>
+
+  <!-- Step 2: Fragment → results div, at y=195 -->
+  <line x1="460" y1="195" x2="248" y2="195" class="arrow-return" marker-end="url(#arrowhead-orange)" />
+  <circle cx="355" cy="182" r="10" class="step-circle" />
+  <text x="355" y="186" class="step-num">2</text>
+  <text x="355" y="215" class="label-small">HTMX swaps into target</text>
+
+  <!-- Bottom note -->
+  <text x="375" y="298" class="label-small">Only the #results div changes. The nav, footer, and search input stay exactly as they were.</text>
+</svg>

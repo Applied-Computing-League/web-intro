@@ -1,0 +1,462 @@
+# Chapter 7: Interactive Pages with HTMX
+
+The guestbook from Chapter 6 works. You can submit messages, validate input, delete entries. But every single interaction reloads the entire page. Submit a message: the browser sends a POST, receives a redirect, requests the full page again, and re-renders everything from the `<html>` tag down. Delete a message: same thing. The nav, the header, the CSS, the guestbook form, every message that didn't change: all re-downloaded and re-rendered just to update one part of the page.
+
+For a guestbook, this is fine. The page is small, the interactions are infrequent, and the reload is barely noticeable. But think about a search bar. You want results to appear as the user types. If every keystroke triggered a full page reload, the experience would be terrible: the page flashing white, the cursor losing focus, the scroll position resetting. Some interactions need to update part of the page without replacing all of it.
+
+This chapter introduces HTMX, a library that lets you do exactly that without writing JavaScript.
+
+## Multi-Page vs Single-Page Applications
+
+What we've been building is called a **multi-page application** (MPA). Every navigation and form submission is a full round trip: the browser sends a request, the server sends back a complete HTML page, and the browser replaces everything on screen. This is how the web worked for its first 15 years, and it's still how most websites work today.
+
+In the mid-2000s, **single-page applications** (SPAs) emerged as an alternative. The browser loads one page, then JavaScript handles everything: intercepting link clicks, fetching JSON from the server, and redrawing parts of the page in place. Frameworks like React, Vue, and Angular work this way. SPAs can feel very fast because they only update what changed, but they come with real complexity. You're essentially building two applications: a server that serves data and a JavaScript frontend that turns that data into HTML. Routing, form handling, error states, loading indicators: all things the browser gives you for free in an MPA, all things you have to reimplement in JavaScript. We'll build one in a later chapter so you can see the trade-offs firsthand.
+
+But there's a middle ground. What if you could keep your server-rendered HTML (the approach you already know) and just make it smarter about which parts of the page to replace? You wouldn't need a JSON API. You wouldn't need a JavaScript framework. You'd just add a few HTML attributes and let a small library handle the partial updates.
+
+That's what HTMX does.
+
+## The HTMX Approach
+
+HTMX is a JavaScript library, but you don't write any JavaScript to use it. You include it with a script tag and control it entirely through HTML attributes. The idea is simple: any HTML element can make an HTTP request, and the response (which is just HTML) gets swapped into the page.
+
+You already know how to write endpoints that return HTML. In Chapter 5, your profile endpoint rendered a template and returned a full page. HTMX doesn't change how your server works. It changes what the server needs to return. Instead of always sending a complete page (with `<html>`, `<head>`, `<body>`, navigation, footer), you can send just the piece that changed: a search result list, a success message, a single updated row.
+
+To add HTMX to a project, include the script in your base template's `<head>`:
+
+```html
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+```
+
+That's it. No build step, no npm, no configuration. The library is about 14KB, smaller than most images on a typical web page.
+
+![Full page reload vs HTMX partial update](../images/chapter7/figure-7-1-en.svg)
+
+The difference is visible in the diagram. On the left, a traditional page reload: the server returns an entire HTML document, and the browser replaces everything, including the parts that didn't change. On the right, HTMX: the server returns just the piece that changed, and HTMX swaps it into the target element. The nav, the search input, the footer: all untouched.
+
+To see why this is better, try building a search feature the way you already know how.
+
+## hx-get and hx-post
+
+Say you want a page where users can search for profiles. With everything you've learned so far, you'd build it as a normal form:
+
+```html
+<form action="/search" method="GET">
+    <input type="text" name="q" placeholder="Search profiles...">
+    <button type="submit">Search</button>
+</form>
+
+<div id="results">
+    <!-- results rendered by the server -->
+</div>
+```
+
+And an endpoint:
+
+```python
+@app.get("/search")
+def search(request: Request, q: str = ""):
+    results = filter_profiles(q)
+    return templates.TemplateResponse("search.html", {
+        "request": request, "profiles": results, "query": q
+    })
+```
+
+This works. The user types a name, clicks Search, and gets a page of results. But the entire page reloads. The browser fetches the full HTML document: `<html>`, `<head>`, navigation, footer, everything. The URL changes to `/search?q=lucas`. If the user wants to refine their search, they edit the input and click Search again. Another full reload.
+
+Now try adding `hx-get` to the input instead:
+
+```html
+<input type="text" name="q" placeholder="Search profiles..."
+       hx-get="/search"
+       hx-trigger="keyup changed delay:300ms"
+       hx-target="#results">
+
+<div id="results"></div>
+```
+
+And change the endpoint to return just the results, not a full page:
+
+```python
+@app.get("/search")
+def search(q: str = ""):
+    results = filter_profiles(q)
+    return HTMLResponse(render_results(results))
+```
+
+Type a few characters. The results appear below the input. No page reload, no flash, no lost cursor position. Open the Network tab and you'll see small requests going out as you type, each returning a fragment of HTML (not a full document). The nav, the header, the footer: none of them were re-sent or re-rendered.
+
+`hx-get` tells HTMX: "when this element is triggered, make a GET request to this URL." HTMX automatically includes the element's `name` and `value` as query parameters, so the server receives `q=lucas` the same way it would from a form submission. The difference is what happens with the response. Instead of the browser loading a new page, HTMX takes the HTML fragment and swaps it into the current page.
+
+`hx-post` works the same way but sends a POST request. This is useful for form submissions that change data:
+
+```html
+<form hx-post="/subscribe" hx-target="#subscribe-result">
+    <input type="email" name="email" placeholder="you@example.com">
+    <button type="submit">Subscribe</button>
+</form>
+<div id="subscribe-result"></div>
+```
+
+And the endpoint:
+
+```python
+@app.post("/subscribe")
+def subscribe(email: str = Form()):
+    return HTMLResponse("<p>Thanks! You're subscribed.</p>")
+```
+
+The endpoint uses `Form()` the same way you learned in Chapter 6. It returns HTML the same way you've been doing since Chapter 4. The only difference is that the response is a fragment (just a `<p>` tag) instead of a full page, and HTMX swaps it into `#subscribe-result` instead of reloading the page.
+
+But there's already something new in those examples that we glossed over: `hx-target` and `hx-trigger`. Without them, HTMX's default behavior creates problems.
+
+## hx-target and hx-swap
+
+By default, HTMX replaces the innerHTML of the element that made the request. Try this:
+
+```html
+<button hx-get="/greeting">Say hello</button>
+```
+
+With this endpoint:
+
+```python
+@app.get("/greeting")
+def greeting():
+    return HTMLResponse("<p>Hello from the server!</p>")
+```
+
+Click the button. The greeting appears, but it replaces the button's text. The button now says "Hello from the server!" inside a `<p>` tag. Click it again and... nothing visible happens, because the `<p>` is already there. The button effectively destroyed itself.
+
+This is rarely what you want. A search input shouldn't replace itself with results. A "load more" button shouldn't become the content it loaded. You need to separate the element that triggers the request from the element that displays the response.
+
+`hx-target` takes a CSS selector and tells HTMX where to put the response:
+
+```html
+<button hx-get="/greeting" hx-target="#output">Say hello</button>
+<div id="output"></div>
+```
+
+Now clicking the button fetches `/greeting`, but the response goes into `#output`. The button stays visible. You can click it again.
+
+This separation is what makes HTMX practical. A search input puts results in a list below it. A delete button removes its parent row. A form appends new items to a container elsewhere on the page.
+
+Once you control where the response goes, the next question is how it gets inserted. The default (`innerHTML`) replaces the target's contents. That works for search results, where you want the new results to replace the old ones. But what about a chat or a message list, where you want to add to what's already there?
+
+`hx-swap` controls the insertion method. `innerHTML` is the default: replace the target's contents. `beforeend` appends to the end:
+
+```html
+<form hx-post="/messages" hx-target="#message-list" hx-swap="beforeend">
+    <input name="message">
+    <button type="submit">Send</button>
+</form>
+
+<div id="message-list">
+    <!-- existing messages stay, new ones appear at the bottom -->
+</div>
+```
+
+Each submission adds a new message without removing the existing ones. `afterbegin` does the same but prepends (newest first).
+
+`outerHTML` replaces the target element itself, not just its contents. This is useful when the response is a replacement for the entire component:
+
+```html
+<div id="status" hx-get="/check-status" hx-swap="outerHTML">
+    Checking...
+</div>
+```
+
+The server returns a new `<div id="status">` with the updated content, and the old one is swapped out entirely. You'll use `outerHTML` in Exercise 5 for a "load more" button that replaces itself with new content and a fresh button.
+
+Those three swap modes cover most situations. HTMX has a few more (`beforebegin`, `afterend`, `delete`, `none`), but you can look those up when you need them.
+
+One thing in the search example still needs explaining. We used `hx-trigger="keyup changed delay:300ms"` on the input, but we haven't discussed what that means.
+
+By default, buttons trigger on `click` and inputs trigger on `change` (which fires when the input loses focus, not while you're typing). For live search, you want the request to fire as the user types. `hx-trigger` lets you customize this:
+
+```html
+<input type="text" name="q"
+       hx-get="/search"
+       hx-target="#results"
+       hx-trigger="keyup changed delay:300ms">
+```
+
+`keyup` fires every time a key is released. `changed` skips requests when the value hasn't actually changed (like pressing arrow keys or Shift). `delay:300ms` waits 300 milliseconds of inactivity before sending the request, so rapid typing produces one request at the end rather than one per keystroke. Without the delay, typing "lucas" would fire five requests (`l`, `lu`, `luc`, `luca`, `lucas`). With it, the user gets a brief pause to finish typing and then one request goes out.
+
+This combination of `hx-get`, `hx-target`, `hx-trigger`, and `hx-swap` covers most real-world HTMX use cases. The HTMX documentation at htmx.org covers additional features (pushing URLs to the address bar, confirmation dialogs, server-sent events) when you need them.
+
+![How HTMX updates part of a page](../images/chapter7/figure-7-2-en.svg)
+
+The diagram shows the flow when you type in a search box with HTMX. The browser sends a request for just the results, the server renders a fragment (not a full page), and HTMX swaps it into the target div. The rest of the page is untouched.
+
+There's one more piece of user experience to address. When you type in the search box, something happens on the server, and then results appear. But what does the user see during that gap?
+
+## Loading States
+
+On a fast local server, the gap between request and response is almost invisible. But over a real network, with a database query behind the endpoint, there could be a noticeable pause. During that pause, the user has no feedback that anything is happening. They typed, nothing changed, and they don't know if the app is working or broken.
+
+HTMX handles this with CSS. When a request is in flight, HTMX adds the class `htmx-request` to the triggering element. When the response arrives, it removes the class. You can hook into this with a simple CSS rule to show a loading indicator:
+
+```css
+.search-spinner {
+    opacity: 0;
+    transition: opacity 200ms;
+    position: absolute;
+}
+.search-spinner.htmx-request {
+    opacity: 1;
+}
+```
+
+And mentioning it in our html:
+
+```html
+<div class="search-box" style="position: relative;">
+    <input type="text" name="q"
+           hx-get="/search"
+           hx-target="#results"
+           hx-trigger="keyup changed delay:300ms"
+           hx-indicator=".search-spinner">
+    <span class="search-spinner">Searching...</span>
+</div>
+```
+
+The `hx-indicator` attribute tells HTMX which element should receive the `htmx-request` class. Without it, the class goes on the input itself (which isn't visible). With it, the class goes on the `.search-spinner` span, making it fade in during requests and fade out when the response arrives.
+
+We use `opacity` instead of `display: none` so we can add a smooth CSS transition. But `opacity: 0` still takes up layout space, so we also set `position: absolute` on the spinner (with a `position: relative` parent) to pull it out of the normal flow. That way, there's no empty gap when the spinner isn't showing.
+
+For a real application, you'd replace the "Searching..." text with a small animated spinner. You might also dim the existing results while new ones are loading (Exercise 6 covers this). The mechanism is always the same: `htmx-request` as a CSS hook, with `hx-indicator` controlling which element gets the class.
+
+That's everything we need. Time to apply it to the profile site.
+
+## Hands-On: Adding Live Search to the Profile Site
+
+Our profile site has profiles, a guestbook, and navigation between them. We're going to add a home page with a search bar that filters profiles as you type. This is the first feature that wouldn't be possible (or at least wouldn't be pleasant) with full page reloads.
+
+Start from your Chapter 6 project:
+
+```bash
+cp -r chapter6 chapter7
+cd chapter7
+```
+
+Your current folder structure:
+
+```
+chapter7/
+├── .venv/
+├── main.py
+├── pyproject.toml
+├── static/
+│   └── style.css
+└── templates/
+    ├── base.html
+    ├── guestbook.html
+    ├── not_found.html
+    └── profile.html
+```
+
+We need a few additions. A home page template, a partial template for search results, and some new profiles so there's enough data to make searching interesting:
+
+```
+chapter7/
+├── .venv/
+├── main.py
+├── pyproject.toml
+├── static/
+│   └── style.css
+└── templates/
+    ├── base.html
+    ├── guestbook.html
+    ├── home.html
+    ├── not_found.html
+    ├── partials/
+    │   └── profile_results.html
+    └── profile.html
+```
+
+The `partials/` folder is a convention. Templates in here aren't full pages; they're HTML fragments meant to be swapped into an existing page by HTMX. There's nothing special about the folder name. It's just a way to keep your templates organized.
+
+First, add the HTMX script to `base.html`. Put it in the `<head>` alongside your CSS link:
+
+```html
+<!-- templates/base.html -->
+<!-- add inside <head>, after the CSS link -->
+<script src="https://unpkg.com/htmx.org@2.0.4"></script>
+```
+
+Next, expand the profiles dictionary in `main.py`. Two profiles aren't enough for search to be useful. Add several more:
+
+```python
+# main.py
+# replace the existing profiles dictionary
+
+profiles = {
+    "philipe": {
+        "name": "Philipe Ackerman",
+        "about": [
+            "Hi! I'm a math professor, and a really good one at that.",
+            "When I'm not teaching, you can find me cheering for my soccer team,
+            Botafogo.",
+        ],
+        "skills": ["Math", "Having Long Hair", "Video Recording"],
+    },
+    "lucas": {
+        "name": "Lucas",
+        "about": [
+            "Applied math student at UFRJ and backend developer.",
+            "Part of the computing team at the Applied Computing League.",
+        ],
+        "skills": ["Python", "FastAPI", "Docker", "Linux"],
+    },
+    "zico": {
+        "name": "Zico",
+        "about": [
+            "Applied math student at UFRJ who likes low-level programming.",
+            "Part of the computing team at the Applied Computing League.",
+        ],
+        "skills": ["Rust", "C", "Python", "Git"],
+    },
+    "joao": {
+        "name": "João",
+        "about": [
+            "Applied math student at UFRJ focused on data science.",
+            "Part of the data science team at the Applied Computing League.",
+        ],
+        "skills": ["Python", "Pandas", "Machine Learning", "SQL"],
+    },
+    "eduardo": {
+        "name": "Eduardo",
+        "about": [
+            "Applied math student at UFRJ who turns data into insights.",
+            "Part of the data science team at the Applied Computing League.",
+        ],
+        "skills": ["Python", "Data Visualization", "R", "Statistics"],
+    },
+    "layza": {
+        "name": "Layza",
+        "about": [
+            "Applied math student at UFRJ coordinating the league's projects.",
+            "Part of the management team at the Applied Computing League.",
+        ],
+        "skills": ["Project Management", "Agile", "Data Analysis", "Leadership"],
+    },
+    "arthur": {
+        "name": "Arthur",
+        "about": [
+            "Applied math student at UFRJ working on AI engineering.",
+            "Part of the computing team at the Applied Computing League.",
+        ],
+        "skills": ["Python", "Machine Learning", "LLMs", "AI Engineering"],
+    },
+    "matheus": {
+        "name": "Matheus",
+        "about": [
+            "Applied math student at UFRJ interested in product and strategy.",
+            "Part of the management team at the Applied Computing League.",
+        ],
+        "skills": ["Product Management", "UX Research", "Strategy", "Analytics"],
+    },
+}
+```
+
+Now you need to build four things:
+
+**A GET endpoint at `/`** that renders `home.html`. Pass the full profiles dictionary to the template so the page can display all profiles on first load.
+
+**A GET endpoint at `/search`** that accepts an optional query parameter `q`. This endpoint filters profiles whose name contains the search term (case-insensitive) and returns the `partials/profile_results.html` template. When `q` is empty or missing, return all profiles. This endpoint returns a fragment, not a full page.
+
+For the filtering logic, you'll want something like:
+
+```python
+# inside the search endpoint
+results = {
+    username: profile
+    for username, profile in profiles.items()
+    if q.lower() in profile["name"].lower()
+}
+```
+
+**A home page template** (`templates/home.html`) that extends `base.html`. It should contain a search input with HTMX attributes that sends requests to `/search` as the user types, a loading indicator, and a results `div` that initially shows all profiles. Set up the search input with `hx-get="/search"`, `hx-target="#results"`, `hx-trigger="keyup changed delay:300ms"`, and `hx-indicator`. The input's `name` attribute should be `q` to match the query parameter.
+
+Here's a skeleton:
+
+```html
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>Profiles</h1>
+
+<div class="search-box">
+    <!-- TODO: search input with HTMX attributes -->
+    <!-- TODO: loading indicator -->
+</div>
+
+<div id="results">
+    <!-- TODO: display all profiles initially -->
+    <!-- use the same markup as the partial template -->
+</div>
+{% endblock %}
+```
+
+**A partial template** (`templates/partials/profile_results.html`) that renders a list of profile cards. This template does not extend `base.html` (it's a fragment, not a full page). Each card should show the profile's name, their first "about" line, their skills, and a link to `/profile/{username}`. This is the HTML that HTMX will swap into the `#results` div.
+
+One important detail: the initial load of the home page and the HTMX search results should use the same markup for the profile cards. The cleanest way to do this is to use Jinja's `{% include %}` in `home.html` to embed the partial template on first load:
+
+```html
+<div id="results">
+    {% include "partials/profile_results.html" %}
+</div>
+```
+
+This way, the initial page render and the HTMX updates produce identical HTML. The partial template just needs a `profiles` variable (a dictionary of username/profile pairs) in its context.
+
+For the CSS, add styles to `static/style.css` for the search input (full width, decent padding), the profile cards (similar to the guestbook message cards), the loading indicator (hidden by default, visible during requests), and a "no results" state. You've styled cards and forms before. Apply what you know.
+
+Test your work:
+
+- Visit the home page. Do all six profiles appear?
+- Type "lucas" in the search box. Do the results filter down to Lucas?
+- Type "ar" in the search box. Does Arthur appear?
+- Clear the search box. Do all profiles reappear?
+- Open the Network tab. Do you see XHR requests going to `/search?q=...` as you type? Is the response an HTML fragment (no `<html>`, `<head>`, etc.)?
+- Does the loading indicator appear briefly during search?
+- Click a profile link from the search results. Does it navigate to the profile page?
+- Navigate to the guestbook and back to home. Does everything still work?
+
+When it's working, the experience should feel noticeably different from the full-page interactions in previous chapters. The profiles filter smoothly as you type, with no page flash and no loss of scroll position.
+
+![The profile site with live search](../images/chapter7/figure-7-3-en.png)
+
+::: {.callout-tip collapse="true"}
+## Stuck? Solution available
+
+If you've given it an honest try and are truly stuck, a completed version of this project is available at [github.com/Applied-Computing-League/practical-web-development/en/code/chapter7](https://github.com/Applied-Computing-League/practical-web-development/tree/main/en/code/chapter7). Try to solve it yourself first. You learn more from the struggle than from reading the answer.
+:::
+
+## Chapter Summary
+
+- Multi-page applications reload the entire page on every interaction. Single-page applications use JavaScript to update parts of the page. HTMX is a middle ground: server-rendered HTML with partial page updates.
+- HTMX is controlled through HTML attributes, not JavaScript. Include it with a script tag and add attributes to your elements.
+- `hx-get` and `hx-post` make HTTP requests when an element is interacted with. The server returns an HTML fragment, and HTMX swaps it into the page.
+- `hx-target` controls where the response goes (a CSS selector). Without it, the response replaces the triggering element's content.
+- `hx-swap` controls how the response is inserted: `innerHTML` (default, replace contents), `beforeend` (append), `outerHTML` (replace the element itself).
+- `hx-trigger` controls what event fires the request. For live search: `keyup changed delay:300ms`.
+- Partial templates (HTML fragments without `<html>`, `<head>`, etc.) are what the server returns for HTMX requests. Keep them in a `partials/` folder.
+- Use `hx-indicator` and the `htmx-request` CSS class to show loading states during requests.
+
+## Exercises
+
+1. The search currently filters by name only. Extend it to also match skills: if you type "python", it should return every profile that has "Python" in their skills list, even if "python" doesn't appear in their name. You'll need to update the filtering logic in the search endpoint. The template doesn't need to change.
+
+2. Add an `hx-get` button to each guestbook message that loads an "edit form" in place. When clicked, the message text is replaced with a form (pre-filled with the current message). The form uses `hx-post` to save the edit and swaps the updated message back in. You'll need a GET endpoint that returns the edit form fragment and a POST endpoint that updates the message and returns the updated display fragment. This is the pattern for inline editing.
+
+3. Add `hx-push-url="true"` to the search input. Type a search query and watch the browser's address bar. What happens? Now copy that URL and open it in a new tab. The search query should be in the URL, but does the page show filtered results? If not, update the home page endpoint to accept an optional `q` parameter and pre-filter the profiles when the page first loads. This makes search results shareable.
+
+4. The profile cards link to the profile page with a normal `<a>` tag, which triggers a full page load. Replace the link with an element that uses `hx-get="/profile/{username}"` and `hx-target="body"` to load the profile page without a full reload. What happens to the browser's back button? What happens to the URL? Read about `hx-push-url` in the HTMX docs and fix both issues. Think about whether this is actually better than a normal link.
+
+5. Add a "load more" button to the home page. Show only the first three profiles initially, with a button at the bottom that fetches the next three via `hx-get`. The button should use `hx-swap="outerHTML"` so it replaces itself with the additional profiles (and a new "load more" button if there are still more). You'll need a server endpoint that accepts an `offset` parameter and returns the next batch of profile cards.
+
+6. Right now, if the server is slow, the user sees "Searching..." but the old results stay visible. Add CSS that dims the results container while a search is in progress. You can do this with a parent wrapper that gets the `htmx-request` class via `hx-indicator`, and a CSS rule that reduces the opacity of the results div inside it. Test by adding `import time; time.sleep(1)` to the top of your search endpoint (remove it when you're done).

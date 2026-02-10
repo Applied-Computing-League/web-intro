@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field, ValidationError
@@ -19,6 +19,60 @@ profiles = {
         ],
         "skills": ["Math", "Having Long Hair", "Video Recording"],
         "email": "philipe@example.com",
+    },
+    "lucas": {
+        "name": "Lucas",
+        "about": [
+            "Applied math student at UFRJ and backend developer.",
+            "Part of the computing team at the Applied Computing League.",
+        ],
+        "skills": ["Python", "FastAPI", "Docker", "Linux"],
+        "email": "lucas@example.com",
+    },
+    "zico": {
+        "name": "Zico",
+        "about": [
+            "Applied math student at UFRJ who likes low-level programming.",
+            "Part of the computing team at the Applied Computing League.",
+        ],
+        "skills": ["Rust", "C", "Python", "Git"],
+        "email": "zico@example.com",
+    },
+    "joao": {
+        "name": "João",
+        "about": [
+            "Applied math student at UFRJ focused on data science.",
+            "Part of the data science team at the Applied Computing League.",
+        ],
+        "skills": ["Python", "Pandas", "Machine Learning", "SQL"],
+        "email": "joao@example.com",
+    },
+    "eduardo": {
+        "name": "Eduardo",
+        "about": [
+            "Applied math student at UFRJ who turns data into insights.",
+            "Part of the data science team at the Applied Computing League.",
+        ],
+        "skills": ["Python", "Data Visualization", "R", "Statistics"],
+        "email": "eduardo@example.com",
+    },
+    "layza": {
+        "name": "Layza",
+        "about": [
+            "Applied math student at UFRJ coordinating the league's projects.",
+            "Part of the management team at the Applied Computing League.",
+        ],
+        "skills": ["Project Management", "Agile", "Data Analysis", "Leadership"],
+        "email": "layza@example.com",
+    },
+    "arthur": {
+        "name": "Arthur",
+        "about": [
+            "Applied math student at UFRJ working on AI engineering.",
+            "Part of the computing team at the Applied Computing League.",
+        ],
+        "skills": ["Python", "Machine Learning", "LLMs", "AI Engineering"],
+        "email": "arthur@example.com",
     },
     "matheus": {
         "name": "Matheus",
@@ -44,8 +98,22 @@ messages = []
 def home(request: Request):
     return templates.TemplateResponse(
         request=request,
-        name="profile.html",
-        context={"profile": profiles["philipe"]},
+        name="home.html",
+        context={"profiles": profiles},
+    )
+
+
+@app.get("/search")
+def search(q: str = ""):
+    results = {
+        username: profile
+        for username, profile in profiles.items()
+        if q.lower() in profile["name"].lower()
+    }
+    return HTMLResponse(
+        templates.get_template("partials/profile_results.html").render(
+            profiles=results
+        )
     )
 
 

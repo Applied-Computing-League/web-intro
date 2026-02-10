@@ -31,8 +31,8 @@ Now consider a POST form:
 
 ```html
 <form action="/contact" method="POST">
-    <input type="text" name="name" value="Maria">
-    <input type="email" name="email" value="maria@example.com">
+    <input type="text" name="name" value="Matheus">
+    <input type="email" name="email" value="matheus@example.com">
     <textarea name="message">Hello there</textarea>
     <button type="submit">Send</button>
 </form>
@@ -46,7 +46,7 @@ Host: localhost:8000
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 53
 
-name=Maria&email=maria%40example.com&message=Hello+there
+name=Matheus&email=matheus%40example.com&message=Hello+there
 ```
 
 The data isn't in the URL. It's in the request body, after the headers. The format looks similar (key=value pairs separated by &), but notice the encoding: the `@` became `%40` and the space became `+`. This is URL encoding, and the browser handles it automatically. Special characters get encoded for safe transmission.

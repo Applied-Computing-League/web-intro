@@ -18,6 +18,7 @@ Assumes Python knowledge. No prior web experience needed.
 | 4 | Servers with FastAPI | [chapter4](en/code/chapter4) |
 | 5 | Templates with Jinja | [chapter5](en/code/chapter5) |
 | 6 | Forms and User Input | [chapter6](en/code/chapter6) |
+| 7 | Interactive Pages with HTMX | [chapter7](en/code/chapter7) |
 
 More chapters will be added.
 
@@ -83,18 +84,16 @@ practical-web-development/
 │   ├── references.bib
 │   ├── chapters/
 │   │   ├── chapter1.qmd
-│   │   ├── chapter2.qmd
-│   │   ├── chapter3.qmd
-│   │   └── chapter4.qmd
+│   │   ├── ...
+│   │   └── chapter7.qmd
 │   ├── images/                  # Figures (language-specific)
 │   │   ├── chapter1/
-│   │   ├── chapter2/
-│   │   ├── chapter3/
-│   │   └── chapter4/
+│   │   ├── ...
+│   │   └── chapter7/
 │   └── code/                    # Completed code per chapter
 │       ├── chapter2/
-│       ├── chapter3/
-│       └── chapter4/
+│       ├── ...
+│       └── chapter7/
 ├── docs/                        # Rendered output
 │   └── en/
 ├── README.md

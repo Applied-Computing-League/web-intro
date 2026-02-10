@@ -46,7 +46,7 @@
   <rect x="40" y="55" width="170" height="100" rx="6" ry="6" class="browser-box" />
   <text x="125" y="80" class="box-title" fill="#1890ff">Browser</text>
   <text x="125" y="103" class="label-small">User fills out form</text>
-  <text x="125" y="120" class="code-text">name = "Maria"</text>
+  <text x="125" y="120" class="code-text">name = "Matheus"</text>
   <text x="125" y="140" class="label-small">Clicks submit</text>
 
   <!-- Step 1 arrow -->
@@ -54,7 +54,7 @@
   <text x="250" y="92" class="step-num">1</text>
   <line x1="210" y1="105" x2="282" y2="105" class="arrow" marker-end="url(#arrowhead)" />
   <text x="246" y="125" class="code-text">POST /</text>
-  <text x="246" y="140" class="label-small">name=Maria</text>
+  <text x="246" y="140" class="label-small">name=Matheus</text>
 
   <!-- FastAPI box -->
   <rect x="290" y="55" width="170" height="100" rx="6" ry="6" class="server-box" />
@@ -75,7 +75,7 @@
   <text x="625" y="80" class="box-title" fill="#d46b08">Template</text>
   <text x="625" y="103" class="label-small">Fills in placeholders</text>
   <text x="625" y="120" class="code-text">{{ greeting }}</text>
-  <text x="625" y="140" class="label-small">→ Hello, Maria!</text>
+  <text x="625" y="140" class="label-small">→ Hello, Matheus!</text>
 
   <!-- Step 3: return arrow, then mask circle + step circle on top -->
   <path d="M 625,155 L 625,205 L 125,205 L 125,155" class="arrow-return" marker-end="url(#arrowhead-blue)" />
